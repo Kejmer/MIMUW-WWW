@@ -139,8 +139,8 @@ th, td {
 
 #kierunki {
     border: 1px solid black;
-    margin-left: 40%;
-    margin-right: 40%;
+    margin-left: 35%;
+    margin-right: 35%;
     background-color: burlywood;
 }
 
@@ -157,4 +157,19 @@ th, td {
     display: inline; 
     width: 400px; 
     height: 200px;
+}
+
+.weather-box {
+    background-color: aquamarine;
+    border: 1px solid blue;
+    margin-left: 35%;
+    margin-right: 35%;
+}
+
+.break-below {
+    padding-bottom: 10px;
+}
+
+section p:first-child {
+    font-size: larger;
 }
