@@ -170,6 +170,6 @@ th, td {
     padding-bottom: 10px;
 }
 
-section p:first-child {
+.small-header {
     font-size: larger;
 }
