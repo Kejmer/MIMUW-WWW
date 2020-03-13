@@ -33,7 +33,8 @@ footer {
     margin-right: 35%;
 }
 
-.container-centre2 ul {
+ul.passenger-list {
+    margin-left: 38%;
     text-align: left; 
     font-size: 20px;
 }
