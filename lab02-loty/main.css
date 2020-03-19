@@ -4,7 +4,7 @@ body {
     text-align: center;
 }
 
-.title-head {
+.title-head, header {
     font-size: 40px;
     font-weight: bolder;
 }
@@ -18,13 +18,18 @@ footer {
     border: 2px solid black;
     margin-left: 25%;
     margin-right: 25%;
-  }
+}
+
+footer#main-container {
+    margin-left: 10%;
+    width: 80%;
+}
 
 
 .container-centre {
     align-content: center;
-    margin-left: 300px;
-    margin-right: 250px;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 .container-centre2 {
@@ -183,6 +188,16 @@ th, td {
     top: 0;
 }
 
+.float-left {
+    position: fixed;
+    left: 0;
+}
+
+.float-bottom {
+    position: fixed;
+    bottom: 0;
+}
+
 nav li {
     text-align: left;
 }
@@ -230,16 +245,28 @@ ul {
     text-decoration: line-through   ;
 }
 
-tr td:nth-child(5) {
+#loty tr td:nth-child(5), #opoznienia tr td:nth-child(4) {
     font-weight: bold;
 }
 
-tr.on-time td:nth-child(5) {
+#loty tr.on-time td:nth-child(5) {
     font-weight: lighter;
+    font-style: italic;
 }
 
-tr.cancelled td:nth-child(5) {
+#loty tr.cancelled td:nth-child(5), #opoznienia tr.cancelled td:nth-child(4) {
     text-transform: uppercase;
     text-decoration: underline;
 }
 
+.divider {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+footer {
+    display: flex;
+    justify-content: space-around;
+}
