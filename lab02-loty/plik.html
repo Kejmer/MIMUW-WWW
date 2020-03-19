@@ -9,43 +9,76 @@
     <script src='main.js'></script>
 </head>
 <body>
-    <header>Lista Lotów</header>
+    <header>
+        <nav class="float-right float-top">
+            <dl>Nawigacja</dl>
+            <hr>    
+            <ul>
+                <li><a href="plik.html">Główna</a></li>
+                <li><a href="#">Zamówienia</a></li>
+                <li><a href="#">Odwołania</a></li>
+                <li><a href="#">Oferta</a></li>
+                <li><a href="show.html">Polecany lot</a></li>
+                <ul>
+                    <li><a href="#">Podstrona1</a></li>
+                    <li><a href="#">Podstrona2</a></li>
+                </ul>
+                <li><a href="#">Opinie</a></li>
+                <li><a href="#">Kontakt</a></li>
+            </ul>
+        </nav>
+    </header>
     <p class="super-lot" id="trzeci">ALE SUPER LOT!!!</p>
     <main class="container-centre">
-        <img src="plik.jpg" alt="logo firmy" class="big-img">
+        <section class="title-head">
+            Lista Lotów<br>
+            <img src="plik.jpg" alt="logo firmy" class="big-img">
+        </section>
         <p id="pierwszy">JESTEM PIERWSZY</p>
         <p id="drugi">JESTEM DRUGI</p>
-        <table>
-                <tr>
-                    <th class="column-s1">Nr Lotu</th>
-                    <th class="column-s4">Skąd</th>
-                    <th class="column-s4">Dokąd</th>
-                    <th class="column-s1">Godzina</th>
-                </tr>
-                <tr>
-                    <td><a href="show.html">GDB1999</a></td>
-                    <td>Kompilator</td>
-                    <td>Maszyna</td>
-                    <td>15:14</td>
-                </tr>
-                <tr>
-                    <td><a href="show.html">ASD12299</a></td>
-                    <td>Kompilator</td>
-                    <td>Ekran</td>
-                    <td>15:44</td>
-                </tr>
-                <tr>
-                    <td><a href="show.html">PIBP2213</a></td>
-                    <td>Klawiatura</td>
-                    <td>Kompilator</td>
-                    <td>16:34</td>
-                </tr>
-                <tr>
-                    <td><a href="show.html">JNP2441</a></td>
-                    <td>Myszka</td>
-                    <td>Maszyna</td>
-                    <td>18:00</td>
-                </tr>
+        <table id="loty">
+            <tr >
+                <th class="column-s2">Nr Lotu</th>
+                <th class="column-s3">Skąd</th>
+                <th class="column-s3">Dokąd</th>
+                <th class="column-s1">Godzina</th>
+                <th class="column-s2">Opóźnienie</th>
+            </tr>
+            <tr class="on-time">
+                <td><a href="show.html">GDB1999</a></td>
+                <td>Kompilator</td>
+                <td>Maszyna</td>
+                <td>15:14</td>
+                <td>brak</td>
+            </tr>
+            <tr class="delayed">
+                <td><a href="show.html">ASD12299</a></td>
+                <td>Kompilator</td>
+                <td>Ekran</td>
+                <td>15:44</td>
+                <td>20 minut</td>
+            </tr>
+            <tr class="on-time">
+                <td><a href="show.html">PIBP2213</a></td>
+                <td>Klawiatura</td>
+                <td>Kompilator</td>
+                <td>16:34</td>
+                <td>brak</td>
+            </tr>
+            <tr class="over-timed">
+                <td><a href="show.html">JNP2441</a></td>
+                <td>Myszka</td>
+                <td>Maszyna</td>
+                <td>18:00</td>
+                <td>1 godzina</td>
+            </tr>
+            <tr class="cancelled">
+                <td><a href="show.html">BSK1025</a></td>
+                <td>Touchpad</td>
+                <td>Matryca</td>
+                <td>20:00</td>
+                <td>odwołany</td>
+            </tr>
         </table>
         <br><br>
     </main>
