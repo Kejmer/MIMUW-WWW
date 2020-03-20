@@ -30,6 +30,7 @@ footer#main-container {
     align-content: center;
     margin-left: 5%;
     margin-right: 5%;
+    margin-bottom: 40px;
 }
 
 .container-centre2 {
@@ -204,11 +205,12 @@ nav li {
 
 nav {
     border: black solid 1px;
-    height: 300px;
+    height: 320px;
     background: linear-gradient(180deg, rgba(163,175,186,1) 0%, rgba(192,204,207,1) 100%);
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     font-size: 17px;
     width: 200px;
+    min-width: 160px;
 }
 
 nav a {
@@ -269,4 +271,18 @@ ul {
 footer {
     display: flex;
     justify-content: space-around;
+}
+
+.flex-start {
+    justify-content: flex-start;
+}
+
+.small-margin > section {
+    margin: 5px;
+}
+
+.block-space {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
 }

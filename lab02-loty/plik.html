@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html  lang="pl>
 <html>
 <head>
     <meta charset='utf-8'>
@@ -10,34 +10,33 @@
 </head>
 <body>
     <div class="divider">
-        <header class="column-s2">
-            <nav class="column-s10">
-                <dl>Nawigacja</dl>
-                <hr>    
-                <ul>
-                    <li><a href="plik.html">Główna</a></li>
-                    <li><a href="#">Zamówienia</a></li>
-                    <li><a href="#">Odwołania</a></li>
-                    <li><a href="#">Oferta</a></li>
-                    <li><a href="show.html">Polecany lot</a></li>
+        <nav>
+            <p class="block-space">Nawigacja</p>
+            <hr>    
+            <ul>
+                <li><a href="plik.html">Główna</a></li>
+                <li><a href="rezerwacja.html">Rezerwacje</a></li>
+                <li><a href="#">Odwołania</a></li>
+                <li><a href="#">Oferta</a></li>
+                <li><a href="show.html">Polecany lot</a>
                     <ul>
                         <li><a href="#">Podstrona1</a></li>
                         <li><a href="#">Podstrona2</a></li>
                     </ul>
-                    <li><a href="#">Opinie</a></li>
-                    <li><a href="#">Kontakt</a></li>
-                </ul>
-            </nav>
-        </header>
-        <div class="column-s7">
-            <main class="container-centre ">
-                <section class="title-head">
-                    Lista Lotów<br>
-                    <img src="plik.jpg" alt="logo firmy" class="big-img">
-                </section>
+                </li>
+                <li><a href="#">Opinie</a></li>
+                <li><a href="#">Kontakt</a></li>
+            </ul>
+        </nav>
+        <div class="column-s6">
+            <header>
+                Lista Lotów<br>
+                <img src="plik.jpg" alt="logo firmy" class="big-img break-below">
+            </header>
+            <section class="container-centre ">
                 <table id="loty">
                     <tr >
-                        <th class="column-s2">Nr Lotu</th>
+                        <th class="column-s1">Nr Lotu</th>
                         <th class="column-s3">Skąd</th>
                         <th class="column-s3">Dokąd</th>
                         <th class="column-s1">Godzina</th>
@@ -79,15 +78,14 @@
                         <td>odwołany</td>
                     </tr>
                 </table>
-                <br><br>
-            </main>
+            </section>
             <footer id="main-container">
                 <p>That's all</p>
             </footer>
         </div>
 
         <section id="delayed-flights" class="column-s3">
-            <h>Opóźnienia</h>
+            <h class="small-header block-space">Opóźnienia</h>
             <table id="opoznienia">
                 <tr>
                     <th class="column-sa4">Skąd</th>
