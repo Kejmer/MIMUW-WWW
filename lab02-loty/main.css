@@ -204,6 +204,7 @@ nav {
     height: 320px;
     background: linear-gradient(180deg, rgba(163,175,186,1) 0%, rgba(192,204,207,1) 100%);
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: bold;
     font-size: 17px;
     width: 200px;
     min-width: 160px;
@@ -283,13 +284,46 @@ footer {
     margin-block-end: 1em;
 }
 
-@media only screen {
+
+@media only screen and (max-width: 480px) {
+    .divider {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    footer, .media-width, table {
+        width: 100%;
+    }
+    
+    .container-centre {
+        margin: 0;
+        margin-bottom: 20px;
+    }
+    
+    #kierunki, .weather-box, footer {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    
+    ul.passenger-list {
+        margin-left: 0;
+    }
+    
+    .big-img {
+        width: 440px;
+        height: 240px;
+    }
+    
+}
+
+@media only screen and (max-width: 320px) {
     .divider {
         flex-direction: column;
         align-items: center;
     }
 
-    footer, .media-width {
+    footer, .media-width, table {
         width: 100%;
     }
 
@@ -297,25 +331,18 @@ footer {
         margin: 0;
         margin-bottom: 20px;
     }
-}
 
-@media only screen and (max-width: 320px) {
-
-    table {
-        width: 100%;
+    #kierunki, .weather-box, footer {
+        margin-left: 0;
+        margin-right: 0;
     }
 
-    footer {
-        /* width: 100%  ; */
+    ul.passenger-list {
+        margin-left: 0;
     }
-}
 
-
-@media only screen and (max-width: 480px) {
-
-
-    footer {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
+    .big-img {
+        width: 320px;
+        height: 190px;
     }
 }
