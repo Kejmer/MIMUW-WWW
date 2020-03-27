@@ -9,7 +9,6 @@
     <script src='main.js'></script>
 </head>
 <body>
-
     <div class="divider">
         <header class="column-s1 media-width">
             <nav>
@@ -37,60 +36,62 @@
                     Rezerwacja
                 </h>
                 <section class="break-below">
-                    <form class="divider flex-start small-margin">
-                        <div>
-                            <label for="fname">Imię:</label><br>
-                            <input type="text" id="fname" name="fname">
-                        </div>
-                        <div>
-                            <label for="lname">Nazwisko:</label><br>
-                            <input type="text" id="lname" name="lname">
-                        </div>
-                        <div>
-                            <label for="from">Skąd:</label><br>
-                            <select name="from">
-                                <optgroup label="Hardware">
-                                    <option value="Maszyna">Maszyna</option>
-                                    <option value="Ekran">Ekran</option>
-                                    <option value="Mysz">Mysz</option>
-                                    <option value="Touchpad">Touchpad</option>
-                                </optgroup>
-                                <optgroup label="Software">
-                                    <option value="Przegladarka">Przegladarka</option>
-                                    <option value="Vim">Vim</option>
-                                    <option value="Visual-Studio">Visual Studio</option>
-                                </optgroup>
-                                <optgroup label="Teoria">
-                                    <option value="Kompilator">Kompilator</option>
-                                    <option value="Automat">Automat</option>
-                                    <option value="Max-Flow">Max-Flow</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="destination">Dokąd:</label><br>
-                            <select name="destination">
-                                <optgroup label="Hardware">
-                                    <option value="Maszyna">Maszyna</option>
-                                    <option value="Ekran">Ekran</option>
-                                    <option value="Mysz">Mysz</option>
-                                    <option value="Touchpad">Touchpad</option>
-                                </optgroup>
-                                <optgroup label="Software">
-                                    <option value="Przegladarka">Przegladarka</option>
-                                    <option value="Vim">Vim</option>
-                                    <option value="Visual-Studio">Visual Studio</option>
-                                </optgroup>
-                                <optgroup label="Teoria">
-                                    <option value="Kompilator">Kompilator</option>
-                                    <option value="Automat">Automat</option>
-                                    <option value="Max-Flow">Max-Flow</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="flight-date">Data wylotu:</label><br>
-                            <input type="date" id="flight-date" name="flight-date">
+                    <form class="divider-vertical flex-start small-margin">
+                        <div class="divider">
+                            <div>
+                                <label for="fname">Imię:</label><br>
+                                <input type="text" id="fname" name="fname">
+                            </div>
+                            <div>
+                                <label for="lname">Nazwisko:</label><br>
+                                <input type="text" id="lname" name="lname">
+                            </div>
+                            <div>
+                                <label for="from">Skąd:</label><br>
+                                <select name="from">
+                                    <optgroup label="Hardware">
+                                        <option value="Maszyna">Maszyna</option>
+                                        <option value="Ekran">Ekran</option>
+                                        <option value="Mysz">Mysz</option>
+                                        <option value="Touchpad">Touchpad</option>
+                                    </optgroup>
+                                    <optgroup label="Software">
+                                        <option value="Przegladarka">Przegladarka</option>
+                                        <option value="Vim">Vim</option>
+                                        <option value="Visual-Studio">Visual Studio</option>
+                                    </optgroup>
+                                    <optgroup label="Teoria">
+                                        <option value="Kompilator">Kompilator</option>
+                                        <option value="Automat">Automat</option>
+                                        <option value="Max-Flow">Max-Flow</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="destination">Dokąd:</label><br>
+                                <select name="destination">
+                                    <optgroup label="Hardware">
+                                        <option value="Maszyna">Maszyna</option>
+                                        <option value="Ekran">Ekran</option>
+                                        <option value="Mysz">Mysz</option>
+                                        <option value="Touchpad">Touchpad</option>
+                                    </optgroup>
+                                    <optgroup label="Software">
+                                        <option value="Przegladarka">Przegladarka</option>
+                                        <option value="Vim">Vim</option>
+                                        <option value="Visual-Studio">Visual Studio</option>
+                                    </optgroup>
+                                    <optgroup label="Teoria">
+                                        <option value="Kompilator">Kompilator</option>
+                                        <option value="Automat">Automat</option>
+                                        <option value="Max-Flow">Max-Flow</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="flight-date">Data wylotu:</label><br>
+                                <input type="date" id="flight-date" name="flight-date">
+                            </div>
                         </div>
                         <div>
                             <button>Czyść</button>

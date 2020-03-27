@@ -264,6 +264,11 @@ ul {
     justify-content: space-between;
 }
 
+.divider-vertical {
+    display: flex;
+    flex-direction: column;
+}
+
 
 footer {
     display: flex;
