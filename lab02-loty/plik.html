@@ -9,8 +9,8 @@
     <script src='main.js'></script>
 </head>
 <body>
-    <div class="divider">
-        <nav>
+    <div class="container-main">
+        <nav class="gr-sidebar">
             <p class="block-space">Nawigacja</p>
             <hr>    
             <ul>
@@ -28,12 +28,12 @@
                 <li><a href="#">Kontakt</a></li>
             </ul>
         </nav>
-        <div class="column-s6 media-width">
-            <header>
+        <!-- <div class="column-s6 media-width"> -->
+            <header class="gr-header">
                 Lista Lotów<br>
                 <img src="plik.jpg" alt="logo firmy" class="big-img break-below">
             </header>
-            <section class="container-centre ">
+            <main class="container-centre gr-main">
                 <table id="loty">
                     <tr >
                         <th class="column-s1">Nr Lotu</th>
@@ -78,13 +78,13 @@
                         <td>odwołany</td>
                     </tr>
                 </table>
-            </section>
-            <footer id="main-container">
+            </main>
+            <footer id="main-container" class="gr-footer">
                 <p>That's all</p>
             </footer>
-        </div>
+        <!-- </div> -->
 
-        <section id="delayed-flights" class="column-s3 media-width">
+        <section id="delayed-flights" class="gr-canceled">
             <h class="small-header block-space">Opóźnienia</h>
             <table id="opoznienia">
                 <tr>
