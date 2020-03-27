@@ -39,6 +39,27 @@ ul.passenger-list {
     margin-left: 38%;
     text-align: left; 
     font-size: 20px;
+    width: 20%;
+}
+
+.passenger-list li:nth-child(odd) {
+    background-color: gainsboro;
+}
+
+
+.pop-up {
+    display: none;
+    position: absolute;
+    background-color: gray;
+    padding: 5px;
+    border-radius: 10%;
+    border: 1px solid darkgray;
+    right: 60%;
+    top
+}
+
+*:hover > .pop-up {
+    display: inline;
 }
 
 table {
@@ -374,7 +395,11 @@ footer {
     
     ul.passenger-list {
         margin-left: 0;
+        width: 80%;
     }
+
+
+
     
     .big-img {
         width: 440px;
@@ -417,10 +442,6 @@ footer {
     #kierunki, .weather-box, footer {
         margin-left: 0;
         margin-right: 0;
-    }
-
-    ul.passenger-list {
-        margin-left: 0;
     }
 
     .big-img {
