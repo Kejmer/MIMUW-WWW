@@ -6,7 +6,6 @@
     <title>Lot odlotowy</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-    <script src='main.js'></script>
 </head>
 <body>
     <header>
@@ -18,7 +17,7 @@
     <main>
 
         <hr>
-        
+
         <section id="kierunki">
             <h2>Połączenie</h2>
             <div class="break-below">
@@ -31,7 +30,7 @@
             <!-- </div> -->
         </section>
         <hr>
-        
+
         <section class="weather-box break-below mobile-hide">
             <h2 class="small-header">POGODA</h2>
             Wyładowania elektryczne.
@@ -47,45 +46,46 @@
             <h2 class="small-header">SAMOLOT MODEL GCC11 – 64 miejsca</h2>
             <img src="plane.jpg" alt="logo firmy" class="big-img mobile-hide">
         </section>
-        
+
         <hr>
-        
+
         <section>
             <h2 class="small-header">Pasażerowie</h2>
             <ul class="passenger-list">
-                <li>
+                <li data-identyfikator-pasazera="A7">
                     RTX
                     <span class="pop-up">A7</span>
                 </li>
-                <li>
+                <li data-identyfikator-pasazera="B12">
                     RAX
                     <span class="pop-up">B12</span>
                 </li>
-                <li>
+                <li data-identyfikator-pasazera="B11,5">
                     EAX
                     <span class="pop-up">B11,5</span>
                 </li>
-                <li>
+                <li data-identyfikator-pasazera="P1">
                     20AMP
                     <span class="pop-up">P1</span>
                 </li>
-                <li>
+                <li data-identyfikator-pasazera="A1">
                     Marcin Kowalski
                     <span class="pop-up">A1</span>
                 </li>
-                <li>
+                <li data-identyfikator-pasazera="ERROR 404">
                     ERROR 404
                     <span class="pop-up">ERG112</span>
                 </li>
-                <li>
+                <li data-identyfikator-pasazera="Captain">
                     Segmentation Fault Junior
                     <span class="pop-up">Captain</span>
                 </li>
-            </ul> 
+            </ul>
         </section>
     </main>
     <footer>
         <a href="plik.html">WRACAMY NA GŁÓWNĄ</a>
     </footer>
 </body>
+<script src='show.js'></script>
 </html>

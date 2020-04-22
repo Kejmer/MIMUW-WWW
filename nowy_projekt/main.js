@@ -13,4 +13,13 @@ function zaloguj() {
     console.log.apply(console, __spreadArrays(["Ależ skompilowany program!"], komunikaty));
 }
 zaloguj("Ja", "cię", "nie", "mogę");
-//# sourceMappingURL=main.js.map
+var jsonString = "{\n    \"piloci\": [\n        \"Pirx\",\n        \"Exupery\",\n        \"Idzikowski\",\n        \"G\u0142\u00F3wczewski\"\n    ],\n    \"haha\" : 9,\n    \"lotniska\": {\n        \"WAW\": [\"Warszawa\", [3690, 2800]],\n        \"NRT\": [\"Narita\", [4000, 2500]],\n        \"BQH\": [\"Biggin Hill\", [1802, 792]],\n        \"LBG\": [\"Paris-Le Bourget\", [2665, 3000, 1845]]\n    }\n}";
+var ILiniaLotnicza = /** @class */ (function () {
+    function ILiniaLotnicza() {
+    }
+    return ILiniaLotnicza;
+}());
+// function sprawdzDaneLiniiLotniczej(dane: any): dane is ILiniaLotnicza {
+// }
+var daneLiniiLotniczej = JSON.parse(jsonString);
+console.log(daneLiniiLotniczej);

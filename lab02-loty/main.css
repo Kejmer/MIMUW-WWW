@@ -38,7 +38,7 @@ footer {
 
 ul.passenger-list {
     margin-left: 38%;
-    text-align: left; 
+    text-align: left;
     font-size: 20px;
     width: 20%;
 }
@@ -177,8 +177,8 @@ th, td {
 }
 
 .big-img {
-    display: inline; 
-    width: 400px; 
+    display: inline;
+    width: 400px;
     height: 200px;
 }
 
@@ -215,6 +215,14 @@ th, td {
 .float-bottom {
     position: fixed;
     bottom: 0;
+}
+
+.middle {
+    text-align: center;
+}
+
+.big {
+    font-size: 20px;
 }
 
 nav li {
@@ -313,7 +321,7 @@ footer {
 
 .gr-header {
     grid-area: header;
-} 
+}
 
 .gr-main {
     grid-area: main;
@@ -338,7 +346,7 @@ footer {
     grid-column-gap: 15px;
     grid-template-rows: auto;
     grid-row-gap: 10px;
-    grid-template-areas: 
+    grid-template-areas:
         "sidebar header canceled"
         "sidebar main canceled"
         ". footer ."
@@ -390,7 +398,7 @@ footer {
         grid-column-gap: 10px;
         grid-template-rows: auto;
         grid-row-gap: 10px;
-        grid-template-areas: 
+        grid-template-areas:
             "sidebar sidebar"
             "header header"
             "main canceled"
@@ -406,7 +414,7 @@ footer {
         margin-right: 5%;
         margin-left: 5%;
     }
-    
+
 }
 
 @media only screen and (max-width: 480px) {
@@ -431,7 +439,7 @@ footer {
     .container-main {
         justify-items: center;
         grid-template-columns: auto;
-        grid-template-areas: 
+        grid-template-areas:
             "header"
             "sidebar"
             "main"
@@ -443,27 +451,27 @@ footer {
         flex-direction: column;
         align-items: center;
     }
-    
+
     footer, .media-width, table {
         width: 100%;
     }
-    
+
     .container-centre {
         margin: 0;
         margin-bottom: 20px;
     }
-    
+
     #kierunki, .weather-box, footer {
         margin-left: 0;
         margin-right: 0;
     }
-    
-    
+
+
     ul.passenger-list {
         margin-left: 0;
         width: 80%;
     }
-    
+
     .big-img {
         width: 440px;
         height: 240px;
@@ -476,7 +484,7 @@ footer {
     #res-nav {
         margin-left: 28%;
     }
-    
+
 }
 
 @media only screen and (max-width: 320px) {
@@ -484,7 +492,7 @@ footer {
         max-width: 320px;
     }
 
-    
+
     .container-main {
         justify-items: baseline;
     }
