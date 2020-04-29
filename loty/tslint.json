@@ -7,5 +7,10 @@
     "rules": {
       "no-console": false
     },
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2015"
+    },
     "rulesDirectory": []
+
 }
