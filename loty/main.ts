@@ -1,26 +1,48 @@
-let fail_modal = document.querySelector('#fail_modal') as HTMLDivElement;
 let modal_msg = document.querySelector('#fail_modal #modal-message') as HTMLParagraphElement;
+let dest  = document.querySelector('select[name=destination]') as HTMLInputElement;
+let fdate = document.querySelector('input[name=flight-date]') as HTMLInputElement;
+let sbtn  = document.querySelector('input[type=submit]') as HTMLInputElement;
 let fname = document.querySelector('input[name=fname]') as HTMLInputElement;
 let lname = document.querySelector('input[name=lname]') as HTMLInputElement;
-let fdate = document.querySelector('input[name=flight-date]') as HTMLInputElement;
-let sbtn = document.querySelector('input[type=submit]') as HTMLInputElement;
+let from  = document.querySelector('select[name=from]') as HTMLInputElement;
+let fail_modal = document.querySelector('#fail_modal') as HTMLDivElement;
 
-sbtn.addEventListener("click", (e:Event) => checkForm(e));
 fail_modal.addEventListener("click", (e:Event) => hideFormMsg());
+sbtn.addEventListener("click", (e:Event) => checkForm(e));
 
-function checkForm(e:Event) {
+function validName() : boolean {
+  return fname.value != "" && lname.value != "";
+}
+
+function existDate() : boolean {
+  return fdate.value != "";
+}
+
+function validDate() : boolean {
   const date: Date = new Date(fdate.value);
   const now: Date = new Date();
+  return existDate() && (date > now || date.toDateString() == now.toDateString());
+}
 
-  if (fname.value == "" || lname.value == "") {
+function validFlight() : boolean {
+  return from.value != "" && dest.value != "" && dest.value != from.value;
+}
+
+function validForm() {
+  return validDate() && validName() && validFlight();
+}
+
+function checkForm(e:Event) {
+
+  if (validName()) {
     failFormMsg("Proszę wypełnić pola z imieniem i nazwiskiem!", e);
     return;
   }
-  if (fdate.value == "") {
+  if (existDate()) {
     failFormMsg("Proszę podać datę wylotu!", e);
     return;
   }
-  if (date < now && date.toDateString() !== now.toDateString()) {
+  if (validDate()) {
     failFormMsg("Nie sprzedajemy lotów w przeszłość!", e);
   }
 }
@@ -103,11 +125,67 @@ fetch('https://api.github.com/repos/Kejmer/MIMUW-WWW/commits')
     else {
         photo = document.createElement('p');
         photo.innerText = "No photo provided";
-        console.log("No photo provided");
     }
     ceo_container.appendChild(photo);
   }
  );
 
 
-console.log("Pe");
+// KROK 7
+
+function randomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+let right_col = document.querySelector('#delayed-flights') as HTMLElement;
+let form = document.querySelector('#delayed-flights form') as HTMLElement;
+let table = document.querySelector('#opoznienia') as HTMLElement;
+
+
+right_col.addEventListener("click", (e:Event) => rightBackground2(e));
+
+//używając event.target
+function rightBackground(e: Event) {
+  let node = e.target as Node;
+  if (node.contains(table) || node.contains(form))
+    right_col.style.backgroundColor = randomColor();
+}
+
+//nie używając
+let clicksCntr = 0;
+
+form.addEventListener("click", (e:Event) => {
+  e.stopPropagation();
+});
+
+async function rightBackground2(e: Event) {
+  clicksCntr++;
+  console.log(fib(clicksCntr * 10));
+  right_col.style.background = randomColor();
+}
+
+//fibonaci
+
+let fibMem = {};
+function fib(i: number) : number {
+  if (i in fibMem)
+    return fibMem[i];
+  if (i < 2)
+    return i;
+  fibMem[i] = fib(i-1) + fib(i-2);
+  return fibMem[i];
+}
+
+// obsługa submit
+
+function checkSubmit() {
+  sbtn.disabled = !validForm();
+}
+checkSubmit();
+
+form.onchange = () => checkSubmit();

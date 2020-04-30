@@ -34,26 +34,43 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var fail_modal = document.querySelector('#fail_modal');
 var modal_msg = document.querySelector('#fail_modal #modal-message');
-var fname = document.querySelector('input[name=fname]');
-var lname = document.querySelector('input[name=lname]');
+var dest = document.querySelector('select[name=destination]');
 var fdate = document.querySelector('input[name=flight-date]');
 var sbtn = document.querySelector('input[type=submit]');
-sbtn.addEventListener("click", function (e) { return checkForm(e); });
+var fname = document.querySelector('input[name=fname]');
+var lname = document.querySelector('input[name=lname]');
+var from = document.querySelector('select[name=from]');
+var fail_modal = document.querySelector('#fail_modal');
 fail_modal.addEventListener("click", function (e) { return hideFormMsg(); });
-function checkForm(e) {
+sbtn.addEventListener("click", function (e) { return checkForm(e); });
+function validName() {
+    return fname.value != "" && lname.value != "";
+}
+function existDate() {
+    return fdate.value != "";
+}
+function validDate() {
     var date = new Date(fdate.value);
     var now = new Date();
-    if (fname.value == "" || lname.value == "") {
+    return existDate() && (date > now || date.toDateString() == now.toDateString());
+}
+function validFlight() {
+    return from.value != "" && dest.value != "" && dest.value != from.value;
+}
+function validForm() {
+    return validDate() && validName() && validFlight();
+}
+function checkForm(e) {
+    if (validName()) {
         failFormMsg("Proszę wypełnić pola z imieniem i nazwiskiem!", e);
         return;
     }
-    if (fdate.value == "") {
+    if (existDate()) {
         failFormMsg("Proszę podać datę wylotu!", e);
         return;
     }
-    if (date < now && date.toDateString() !== now.toDateString()) {
+    if (validDate()) {
         failFormMsg("Nie sprzedajemy lotów w przeszłość!", e);
     }
 }
@@ -132,8 +149,56 @@ fetch('https://api.github.com/repos/Kejmer/MIMUW-WWW/commits')
     else {
         photo = document.createElement('p');
         photo.innerText = "No photo provided";
-        console.log("No photo provided");
     }
     ceo_container.appendChild(photo);
 });
-console.log("Pe");
+// KROK 7
+function randomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+var right_col = document.querySelector('#delayed-flights');
+var form = document.querySelector('#delayed-flights form');
+var table = document.querySelector('#opoznienia');
+right_col.addEventListener("click", function (e) { return rightBackground2(e); });
+//używając event.target
+function rightBackground(e) {
+    var node = e.target;
+    if (node.contains(table) || node.contains(form))
+        right_col.style.backgroundColor = randomColor();
+}
+//nie używając
+var clicksCntr = 0;
+form.addEventListener("click", function (e) {
+    e.stopPropagation();
+});
+function rightBackground2(e) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            clicksCntr++;
+            console.log(fib(clicksCntr * 10));
+            right_col.style.background = randomColor();
+            return [2 /*return*/];
+        });
+    });
+}
+//fibonaci
+var fibMem = {};
+function fib(i) {
+    if (i in fibMem)
+        return fibMem[i];
+    if (i < 2)
+        return i;
+    fibMem[i] = fib(i - 1) + fib(i - 2);
+    return fibMem[i];
+}
+// obsługa submit
+function checkSubmit() {
+    sbtn.disabled = !validForm();
+}
+checkSubmit();
+form.onchange = function () { return checkSubmit(); };
