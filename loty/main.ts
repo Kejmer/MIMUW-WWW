@@ -1,13 +1,16 @@
-let modal_msg = document.querySelector('#fail_modal #modal-message') as HTMLParagraphElement;
+let modal_msg_success = document.querySelector('#success_modal #modal-message') as HTMLParagraphElement;
+let modal_msg_fail = document.querySelector('#fail_modal #modal-message') as HTMLParagraphElement;
 let dest  = document.querySelector('select[name=destination]') as HTMLInputElement;
 let fdate = document.querySelector('input[name=flight-date]') as HTMLInputElement;
+let success_modal = document.querySelector('#success_modal') as HTMLDivElement;
 let sbtn  = document.querySelector('input[type=submit]') as HTMLInputElement;
 let fname = document.querySelector('input[name=fname]') as HTMLInputElement;
 let lname = document.querySelector('input[name=lname]') as HTMLInputElement;
 let from  = document.querySelector('select[name=from]') as HTMLInputElement;
 let fail_modal = document.querySelector('#fail_modal') as HTMLDivElement;
 
-fail_modal.addEventListener("click", (e:Event) => hideFormMsg());
+success_modal.addEventListener("click", (e:Event) => hideSuccessMsg());
+fail_modal.addEventListener("click", (e:Event) => hideFailMsg());
 sbtn.addEventListener("click", (e:Event) => checkForm(e));
 
 function validName() : boolean {
@@ -34,28 +37,41 @@ function validForm() {
 
 function checkForm(e:Event) {
 
-  if (validName()) {
+  if (!validName()) {
     failFormMsg("Proszę wypełnić pola z imieniem i nazwiskiem!", e);
     return;
   }
-  if (existDate()) {
+  if (!existDate()) {
     failFormMsg("Proszę podać datę wylotu!", e);
     return;
   }
-  if (validDate()) {
+  if (!validDate()) {
     failFormMsg("Nie sprzedajemy lotów w przeszłość!", e);
+    return;
   }
+  successFormMsg("Rezerwacja złożona pomyślnie!", e);
 }
 
 function failFormMsg(s:string, e?:Event) {
   fail_modal.classList.remove('hidden');
-  modal_msg.innerHTML = s;
+  modal_msg_fail.innerHTML = s;
   if (e !== undefined)
     e.preventDefault();
 }
 
-function hideFormMsg() {
+function successFormMsg(s:string, e?:Event) {
+  success_modal.classList.remove('hidden');
+  modal_msg_success.innerHTML = s;
+  if (e !== undefined)
+    e.preventDefault();
+}
+
+function hideFailMsg() {
   fail_modal.classList.add('hidden');
+}
+
+function hideSuccessMsg() {
+  success_modal.classList.add('hidden');
 }
 
 let nowyElement = document.createElement("div");

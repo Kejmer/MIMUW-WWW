@@ -34,15 +34,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var modal_msg = document.querySelector('#fail_modal #modal-message');
+var modal_msg_success = document.querySelector('#success_modal #modal-message');
+var modal_msg_fail = document.querySelector('#fail_modal #modal-message');
 var dest = document.querySelector('select[name=destination]');
 var fdate = document.querySelector('input[name=flight-date]');
+var success_modal = document.querySelector('#success_modal');
 var sbtn = document.querySelector('input[type=submit]');
 var fname = document.querySelector('input[name=fname]');
 var lname = document.querySelector('input[name=lname]');
 var from = document.querySelector('select[name=from]');
 var fail_modal = document.querySelector('#fail_modal');
-fail_modal.addEventListener("click", function (e) { return hideFormMsg(); });
+success_modal.addEventListener("click", function (e) { return hideSuccessMsg(); });
+fail_modal.addEventListener("click", function (e) { return hideFailMsg(); });
 sbtn.addEventListener("click", function (e) { return checkForm(e); });
 function validName() {
     return fname.value != "" && lname.value != "";
@@ -62,26 +65,37 @@ function validForm() {
     return validDate() && validName() && validFlight();
 }
 function checkForm(e) {
-    if (validName()) {
+    if (!validName()) {
         failFormMsg("Proszę wypełnić pola z imieniem i nazwiskiem!", e);
         return;
     }
-    if (existDate()) {
+    if (!existDate()) {
         failFormMsg("Proszę podać datę wylotu!", e);
         return;
     }
-    if (validDate()) {
+    if (!validDate()) {
         failFormMsg("Nie sprzedajemy lotów w przeszłość!", e);
+        return;
     }
+    successFormMsg("Rezerwacja złożona pomyślnie!", e);
 }
 function failFormMsg(s, e) {
     fail_modal.classList.remove('hidden');
-    modal_msg.innerHTML = s;
+    modal_msg_fail.innerHTML = s;
     if (e !== undefined)
         e.preventDefault();
 }
-function hideFormMsg() {
+function successFormMsg(s, e) {
+    success_modal.classList.remove('hidden');
+    modal_msg_success.innerHTML = s;
+    if (e !== undefined)
+        e.preventDefault();
+}
+function hideFailMsg() {
     fail_modal.classList.add('hidden');
+}
+function hideSuccessMsg() {
+    success_modal.classList.add('hidden');
 }
 var nowyElement = document.createElement("div");
 nowyElement.innerText = "WOW TO DZIALA";
