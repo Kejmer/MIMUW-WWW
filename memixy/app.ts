@@ -15,8 +15,8 @@ class MemeHolder {
   }
 
   getMeme(id : number) : Meme {
-    for (let meme of this.memes)
-      if (meme.getId() == id)
+    for (const meme of this.memes)
+      if (meme.getId() === id)
         return meme;
   }
 
@@ -25,7 +25,7 @@ class MemeHolder {
   }
 }
 
-let memeHolder = new MemeHolder(memer.memesInit());
+const memeHolder = new MemeHolder(memer.memesInit());
 
 
 // const indexRouter = require('./routes/index');
@@ -52,16 +52,18 @@ app.get('/', function(req, res, next) {
 
 
 app.get('/meme/:memeId', function(req, res, next) {
-  let meme = memeHolder.getMeme(parseInt(req.params.memeId));
-  res.render('meme', {meme: meme, history: meme.getHistory()});
+  const id = parseInt(req.params.memeId, 10);
+  const pickedMeme = memeHolder.getMeme(id);
+  res.render('meme', {meme: pickedMeme, history: pickedMeme.getHistory()});
 });
 
 
 app.post('/meme/:memeId', function (req, res) {
-  let meme = memeHolder.getMeme(parseInt(req.params.memeId));
-  var price = req.body.price;
-  meme.setPrice(price);
-  res.render('meme', { meme: meme, history: meme.getHistory() })
+  const id = parseInt(req.params.memeId, 10);
+  const pickedMeme = memeHolder.getMeme(id);
+  const price = req.body.price;
+  pickedMeme.setPrice(price);
+  res.render('meme', { meme: pickedMeme, history: pickedMeme.getHistory() })
 })
 
 // catch 404 and forward to error handler

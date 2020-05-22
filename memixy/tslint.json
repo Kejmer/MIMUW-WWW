@@ -1,0 +1,24 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+      "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+      "no-console": false,
+      "no-var-requires": false,
+      "only-arrow-functions": false,
+      "variable-name": {
+        "options" : [
+          "allow-snake-case"
+        ]
+      },
+      "max-classes-per-file": [false]
+    },
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2016"
+    },
+    "rulesDirectory": []
+
+}

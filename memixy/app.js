@@ -14,7 +14,7 @@ var MemeHolder = /** @class */ (function () {
     MemeHolder.prototype.getMeme = function (id) {
         for (var _i = 0, _a = this.memes; _i < _a.length; _i++) {
             var meme = _a[_i];
-            if (meme.getId() == id)
+            if (meme.getId() === id)
                 return meme;
         }
     };
@@ -40,14 +40,16 @@ app.get('/', function (req, res, next) {
     res.render('meme_index', { memes: memer.getBest(memeHolder.getAll()), title: "memy" });
 });
 app.get('/meme/:memeId', function (req, res, next) {
-    var meme = memeHolder.getMeme(parseInt(req.params.memeId));
-    res.render('meme', { meme: meme, history: meme.getHistory() });
+    var id = parseInt(req.params.memeId);
+    var _meme = memeHolder.getMeme(id);
+    res.render('meme', { meme: _meme, history: _meme.getHistory() });
 });
 app.post('/meme/:memeId', function (req, res) {
-    var meme = memeHolder.getMeme(parseInt(req.params.memeId));
+    var id = parseInt(req.params.memeId);
+    var _meme = memeHolder.getMeme(id);
     var price = req.body.price;
-    meme.setPrice(price);
-    res.render('meme', { meme: meme, history: meme.getHistory() });
+    _meme.setPrice(price);
+    res.render('meme', { meme: _meme, history: _meme.getHistory() });
 });
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

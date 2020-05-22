@@ -37,7 +37,7 @@ export default class Meme {
   }
 
   setPrice(new_price: number) {
-    if (this.price == new_price) return;
+    if (this.price === new_price) return;
     this.price = new_price;
     this.history.push(new_price);
   }

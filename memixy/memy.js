@@ -25,7 +25,7 @@ var Meme = /** @class */ (function () {
         return this.history.reverse();
     };
     Meme.prototype.setPrice = function (new_price) {
-        if (this.price == new_price)
+        if (this.price === new_price)
             return;
         this.price = new_price;
         this.history.push(new_price);
