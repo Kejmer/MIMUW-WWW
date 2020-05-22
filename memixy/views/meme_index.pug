@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1 najlepsze memy na wydziale
+  table
+    tr
+      each meme in memes
+        th= meme.name
+    tbody
+      tr
+        each meme in memes
+          td
+            a(href="meme/" + meme.id)
+              img(src="../images/"+ meme.file_name href="meme/" + meme.id).resize_table
+      tr
+        each meme in memes
+          td#price= meme.price
+

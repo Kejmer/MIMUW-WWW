@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  h1= meme.name
+  img(src='../images/'+ meme.file_name href='meme/' + meme.id).resize_show
+  p#price= meme.price
+  br
+  table
+    tr
+      th Historia cen
+    each entry in history
+      tr
+        td#price= entry
+  form(method='POST' action='/meme/' + meme.id)
+    div.form-group
+      label(for='price') Nowa cena:
+      br
+      input#new_price.form-control(type='number', placeholder=meme.price, name='price')
+    button(type='submit') ZMIEŃ TO
