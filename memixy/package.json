@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "compile": "tsc memy.ts; tsc app.ts",
     "start": "node ./bin/www"
   },
   "dependencies": {

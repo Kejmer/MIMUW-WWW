@@ -1,5 +1,6 @@
 "use strict";
 exports.__esModule = true;
+exports.getBest = exports.memesInit = void 0;
 var Meme = /** @class */ (function () {
     function Meme(id, name, file_name, price) {
         this.id = id;
