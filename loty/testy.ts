@@ -22,7 +22,14 @@ describe("Fibonacci", () => {
 
 describe('testDrugi', function () {
 
-  it('should say something', async function() {
+  it('should change background', async function() {
+    this.timeout(20000);
+    await driver.get(filePath);
+    expect(await driver.find('#delayed-flights').getCssValue('background-color')).to.be.equal('rgba(0, 0, 0, 0)');
+    expect(await driver.find('#delayed-flights').doClick().getCssValue('background-color')).to.not.be.equal('rgba(0, 0, 0, 0)');
+  });
+
+  it('formulage should work', async function() {
     this.timeout(20000);
     await driver.get(filePath);
     expect(await driver.find('#loty tr:nth-child(2) td:nth-child(3)').getText()).to.include('Maszyna');
