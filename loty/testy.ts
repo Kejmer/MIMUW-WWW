@@ -22,24 +22,34 @@ describe("Fibonacci", () => {
 
 describe('testDrugi', function () {
 
-    it('should say something', async function() {
-        this.timeout(20000);
-        await driver.get(filePath);
-        expect(await driver.find('#loty tr:nth-child(2) td:nth-child(3)').getText()).to.include('Maszyna');
-        expect(await driver.find('input[type=submit]').isEnabled()).to.be.false;
-        const command = `document.querySelector('input[name=flight-date]').value = "2029-09-04";`;
-        driver.executeScript(command);
-        await driver.find('input[name=fname]').sendKeys('Jan');
-        await driver.find('input[name=lname]').sendKeys('Woreczko');
-        await driver.find('select[name=from] [value=Maszyna]').doClick();
-        expect(await driver.find('select[name=from]').getText()).to.include('Maszyna');
-        await driver.find('select[name=destination] [value=Maszyna]').doClick();
-        expect(await driver.find('input[type=submit]').isEnabled()).to.be.false;
-        await driver.find('select[name=destination] [value=Kompilator]').doClick();
-        expect(await driver.find('input[type=submit]').isEnabled()).to.be.true;
-        await driver.find('input[type=submit]').doClick();
-        expect(await driver.find('#success_modal #modal-message').getText()).to.include('pomyślnie');
+  it('should say something', async function() {
+    this.timeout(20000);
+    await driver.get(filePath);
+    expect(await driver.find('#loty tr:nth-child(2) td:nth-child(3)').getText()).to.include('Maszyna');
+    expect(await driver.find('input[type=submit]').isEnabled()).to.be.false;
+    const command = `document.querySelector('input[name=flight-date]').value = "2029-09-04";`;
+    driver.executeScript(command);
+    await driver.find('input[name=fname]').sendKeys('Jan');
+    await driver.find('input[name=lname]').sendKeys('Woreczko');
+    await driver.find('select[name=from] [value=Maszyna]').doClick();
+    expect(await driver.find('select[name=from]').getText()).to.include('Maszyna');
+    await driver.find('select[name=destination] [value=Maszyna]').doClick();
+    expect(await driver.find('input[type=submit]').isEnabled()).to.be.false;
+    await driver.find('select[name=destination] [value=Kompilator]').doClick();
+    expect(await driver.find('input[type=submit]').isEnabled()).to.be.true;
+    await driver.find('input[type=submit]').doClick();
+    expect(await driver.find('#success_modal #modal-message').getText()).to.include('Rezerwacja złożona pomyślnie');
 
-    });
+    try {
+      await driver.find('.gr-sidebar > ul:nth-child(3) > li:nth-child(1)').doClick();
+      expect("Miało się nie kliknąć").to.equal("a klikło"); //unclickable
+    } catch(err) {
+      expect(err.name).to.equal('ElementClickInterceptedError');
+    }
+
+
+
+
+  });
 
 })
