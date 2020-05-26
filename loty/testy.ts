@@ -40,13 +40,28 @@ describe('testDrugi', function () {
     await driver.find('input[type=submit]').doClick();
     expect(await driver.find('#success_modal #modal-message').getText()).to.include('Rezerwacja złożona pomyślnie');
 
+    let link = '.gr-sidebar > ul:nth-child(3) > li:nth-child(1)'
+
     try {
-      await driver.find('.gr-sidebar > ul:nth-child(3) > li:nth-child(1)').doClick();
-      expect("Miało się nie kliknąć").to.equal("a klikło"); //unclickable
+      await driver.find(link).doClick();
+      expect("Miało się nie kliknąć").to.equal("a klikło"); //returns AssertionError
     } catch(err) {
       expect(err.name).to.equal('ElementClickInterceptedError');
     }
 
+    try {
+      await driver.find('#modal-message.success').doClick();
+    } catch(err) {
+      expect("Powinno dać się").to.equal("kliknąć");
+    }
+
+    //Teraz okienko powinno zniknąć
+
+    try {
+      await driver.find(link).doClick();
+    } catch(err) {
+      expect("Powinno dać się").to.equal("kliknąć");
+    }
 
 
 
