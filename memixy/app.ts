@@ -54,7 +54,7 @@ app.get('/meme/:memeId', function(req, res, next) {
 
 
 app.post('/meme/:memeId', function (req, res, next) {
-  if (Number.isInteger(req.params.memeId))
+  if (isNaN(req.body.price))
     next(createError(400));
 
   const id = parseInt(req.params.memeId, 10);
