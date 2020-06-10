@@ -1,11 +1,11 @@
 "use strict";
 exports.__esModule = true;
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var memer = require('./memy.js');
+var createError = require("http-errors");
+var express = require("express");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var logger = require("morgan");
+var memer = require("./memy.js");
 var app = express();
 var MemeHolder = /** @class */ (function () {
     function MemeHolder(memes) {
@@ -24,8 +24,6 @@ var MemeHolder = /** @class */ (function () {
     return MemeHolder;
 }());
 var memeHolder = new MemeHolder(memer.memesInit());
-// const indexRouter = require('./routes/index');
-// const memesRouter = require('./routes/meme');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -34,22 +32,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use('/', indexRouter);
-// app.use('/meme', memesRouter);
 app.get('/', function (req, res, next) {
     res.render('meme_index', { memes: memer.getBest(memeHolder.getAll()), title: "memy" });
 });
 app.get('/meme/:memeId', function (req, res, next) {
-    var id = parseInt(req.params.memeId);
-    var _meme = memeHolder.getMeme(id);
-    res.render('meme', { meme: _meme, history: _meme.getHistory() });
+    var id = parseInt(req.params.memeId, 10);
+    var pickedMeme = memeHolder.getMeme(id);
+    if (pickedMeme === undefined)
+        next(createError(404));
+    res.render('meme', { meme: pickedMeme, history: pickedMeme.getHistory() });
 });
-app.post('/meme/:memeId', function (req, res) {
-    var id = parseInt(req.params.memeId);
-    var _meme = memeHolder.getMeme(id);
+app.post('/meme/:memeId', function (req, res, next) {
+    if (Number.isInteger(req.params.memeId))
+        next(createError(400));
+    var id = parseInt(req.params.memeId, 10);
+    var pickedMeme = memeHolder.getMeme(id);
     var price = req.body.price;
-    _meme.setPrice(price);
-    res.render('meme', { meme: _meme, history: _meme.getHistory() });
+    if (pickedMeme === undefined)
+        next(createError(404));
+    pickedMeme.setPrice(price);
+    res.render('meme', { meme: pickedMeme, history: pickedMeme.getHistory() });
 });
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

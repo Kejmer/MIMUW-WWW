@@ -33,13 +33,13 @@ export default class Meme {
   }
 
   getHistory() {
-    return this.history.reverse();
+    return this.history;
   }
 
   setPrice(new_price: number) {
     if (this.price === new_price) return;
     this.price = new_price;
-    this.history.push(new_price);
+    this.history.unshift(new_price);
   }
 
   // save() {
@@ -75,5 +75,5 @@ export function getBest(memes: Meme[]) : Meme[] {
     return b.getPrice() - a.getPrice();
   }
 
-  return memes.sort(compare).slice(0,3);
+  return memes.sort(compare).slice(0, Math.min(3, memes.length));
 }

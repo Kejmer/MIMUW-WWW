@@ -1,10 +1,10 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const memer = require('./memy.js');
-import Meme from './memy.js';
+import * as createError from 'http-errors';
+import * as express from 'express';
+import * as path from 'path';
+import * as cookieParser from 'cookie-parser';
+import * as logger from 'morgan';
+import * as memer from './memy.js';
+import type Meme from './memy.js';
 const app = express();
 
 class MemeHolder {
@@ -28,10 +28,6 @@ class MemeHolder {
 const memeHolder = new MemeHolder(memer.memesInit());
 
 
-// const indexRouter = require('./routes/index');
-// const memesRouter = require('./routes/meme');
-
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -42,9 +38,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/', indexRouter);
-// app.use('/meme', memesRouter);
-
 
 app.get('/', function(req, res, next) {
   res.render('meme_index', {memes: memer.getBest(memeHolder.getAll()), title: "memy"});
@@ -54,14 +47,23 @@ app.get('/', function(req, res, next) {
 app.get('/meme/:memeId', function(req, res, next) {
   const id = parseInt(req.params.memeId, 10);
   const pickedMeme = memeHolder.getMeme(id);
+  if (pickedMeme === undefined)
+    next(createError(404));
   res.render('meme', {meme: pickedMeme, history: pickedMeme.getHistory()});
 });
 
 
-app.post('/meme/:memeId', function (req, res) {
+app.post('/meme/:memeId', function (req, res, next) {
+  if (Number.isInteger(req.params.memeId))
+    next(createError(400));
+
   const id = parseInt(req.params.memeId, 10);
   const pickedMeme = memeHolder.getMeme(id);
   const price = req.body.price;
+
+  if (pickedMeme === undefined)
+    next(createError(404));
+
   pickedMeme.setPrice(price);
   res.render('meme', { meme: pickedMeme, history: pickedMeme.getHistory() })
 })

@@ -22,13 +22,13 @@ var Meme = /** @class */ (function () {
         return this.file_name;
     };
     Meme.prototype.getHistory = function () {
-        return this.history.reverse();
+        return this.history;
     };
     Meme.prototype.setPrice = function (new_price) {
         if (this.price === new_price)
             return;
         this.price = new_price;
-        this.history.push(new_price);
+        this.history.unshift(new_price);
     };
     return Meme;
 }());
@@ -54,6 +54,6 @@ function getBest(memes) {
     function compare(a, b) {
         return b.getPrice() - a.getPrice();
     }
-    return memes.sort(compare).slice(0, 3);
+    return memes.sort(compare).slice(0, Math.min(3, memes.length));
 }
 exports.getBest = getBest;
