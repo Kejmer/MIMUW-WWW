@@ -1,20 +1,20 @@
 import * as createError from 'http-errors';
 import * as express from 'express';
 import * as path from 'path';
-import * as cookieParser from 'cookie-parser';
-import * as logger from 'morgan';
 import * as memer from './memy';
+import * as csurf from 'csurf';
 import type Meme from './memy';
 import * as sqlite from 'sqlite3';
+
+
 const app = express();
+const csrfProtection = csurf({ cookie: true });
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 sqlite.verbose();
@@ -30,7 +30,7 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
     res.render('meme_index', {memes: myBest, title: "memy"});
   });
 
-  app.get('/meme/:memeId(\\d+)', async function(req, res, next) {
+  app.get('/meme/:memeId(\\d+)', csrfProtection, async function(req, res, next) {
     const id = parseInt(req.params.memeId, 10);
 
     const pickedMeme = await memer.getMeme(db,id);
@@ -39,10 +39,10 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
 
     const history = await pickedMeme.getHistory(db);
     console.log(history);
-    res.render('meme', {meme: pickedMeme, history: history});
+    res.render('meme', {meme: pickedMeme, history: history, csrfToken: req.csrfToken()});
   });
 
-  app.post('/meme/:memeId(\\d+)', async function (req, res, next) {
+  app.post('/meme/:memeId(\\d+)', csrfProtection, async function (req, res, next) {
     const id = parseInt(req.params.memeId, 10);
     if (isNaN(req.body.price))
       next(createError(400));
@@ -54,7 +54,7 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
     pickedMeme.setPrice(db, price);
 
     const history = await pickedMeme.getHistory(db);
-    res.render('meme', {meme: pickedMeme, history: history});
+    res.render('meme', {meme: pickedMeme, history: history, csrfToken: req.csrfToken()});
 
   });
 

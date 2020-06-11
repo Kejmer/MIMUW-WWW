@@ -39,31 +39,20 @@ exports.__esModule = true;
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+// import * as cookieParser from 'cookie-parser';
+// import * as logger from 'morgan';
 var memer = require("./memy");
+var csurf = require("csurf");
 var sqlite = require("sqlite3");
 var app = express();
+var csrfProtection = csurf({ cookie: true });
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.use(logger('dev'));
+// app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-// class MemeHolder {
-//   private db : sqlite.Database
-//   constructor(db : sqlite.Database) {
-//     this.db = db;
-//   }
-//   getMeme(id : number) : Meme {
-//     memer.getMeme(db, id);
-//   }
-//   getAll() : Meme[] {
-//     return this.memes;
-//   }
-// }
-// const memeHolder = new MemeHolder(memer.memesInit());
 sqlite.verbose();
 var db = new sqlite.Database('memes.db');
 memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -85,7 +74,7 @@ memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, v
                 });
             });
         });
-        app.get('/meme/:memeId(\\d+)', function (req, res, next) {
+        app.get('/meme/:memeId(\\d+)', csrfProtection, function (req, res, next) {
             return __awaiter(this, void 0, void 0, function () {
                 var id, pickedMeme, history;
                 return __generator(this, function (_a) {
@@ -101,13 +90,13 @@ memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, v
                         case 2:
                             history = _a.sent();
                             console.log(history);
-                            res.render('meme', { meme: pickedMeme, history: history });
+                            res.render('meme', { meme: pickedMeme, history: history, csrfToken: req.csrfToken() });
                             return [2 /*return*/];
                     }
                 });
             });
         });
-        app.post('/meme/:memeId(\\d+)', function (req, res, next) {
+        app.post('/meme/:memeId(\\d+)', csrfProtection, function (req, res, next) {
             return __awaiter(this, void 0, void 0, function () {
                 var id, price, pickedMeme, history;
                 return __generator(this, function (_a) {
@@ -126,7 +115,7 @@ memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, v
                             return [4 /*yield*/, pickedMeme.getHistory(db)];
                         case 2:
                             history = _a.sent();
-                            res.render('meme', { meme: pickedMeme, history: history });
+                            res.render('meme', { meme: pickedMeme, history: history, csrfToken: req.csrfToken() });
                             return [2 /*return*/];
                     }
                 });
