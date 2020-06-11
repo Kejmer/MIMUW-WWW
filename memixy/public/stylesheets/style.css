@@ -35,7 +35,7 @@ th {
   font-weight: bold;
 }
 
-form {
+form, .center {
   text-align: center;
 }
 
