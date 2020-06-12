@@ -16,18 +16,20 @@ export async function createMemeTablesIfNeeded(db: sqlite.Database): Promise<voi
       }
 
       console.log('Creating database tables...');
-      db.run(`
-        CREATE TABLE history (
-          meme_id INTEGER NOT NULL,
-          price INTEGER NOT NULL,
-          created_at REAL NOT NULL,
-          author TEXT
-        )
-        `, [], (err: any) => {
-          if (err) {
-            reject('DB Error');
-            return;
-          }
+      db.serialize(() => {
+        db.run(`
+          CREATE TABLE history (
+            meme_id INTEGER NOT NULL,
+            price INTEGER NOT NULL,
+            created_at REAL NOT NULL,
+            author TEXT
+          )
+          `, [], (err: any) => {
+            if (err) {
+              reject('DB Error');
+              return;
+            }
+          });
         db.run(`
         CREATE INDEX history_time_idx
           ON history(created_at)
@@ -36,25 +38,25 @@ export async function createMemeTablesIfNeeded(db: sqlite.Database): Promise<voi
             reject('DB Error');
             return;
           }
-          db.run(`
-            CREATE TABLE memes (
-              id INTEGER PRIMARY KEY,
-              name TEXT NOT NULL,
-              url TEXT NOT NULL,
-              price INTEGER NOT NULL,
-              last_updator TEXT
-            )`
-            , [], (err: any) => {
-              if (err) {
-                reject('DB Error');
-                return;
-              }
-              console.log('Done.');
-
-              memesInit(db);
-              resolve();
-            });
         });
+        db.run(`
+          CREATE TABLE memes (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            url TEXT NOT NULL,
+            price INTEGER NOT NULL,
+            last_updator TEXT
+          )`
+          , [], (err: any) => {
+            if (err) {
+              reject('DB Error');
+              return;
+            }
+            console.log('Done.');
+
+            memesInit(db);
+            resolve();
+          });
       });
     });
   });
@@ -79,7 +81,6 @@ export function getMeme(db: sqlite.Database, id: number): Promise<Meme | undefin
     });
   });
 }
-
 
 export default class Meme {
   private id: number;
@@ -128,33 +129,48 @@ export default class Meme {
     });
   }
 
-  setPrice(db: sqlite.Database, new_price: number, author: string) {
-    if (new_price == this.price || new_price < 0) return;
+
+  setPrice(db: sqlite.Database, new_price: number, author: string) : Promise<void> {
+    return new Promise((resolve, reject) => {
+    if (new_price == this.price || new_price < 0) {
+      resolve();
+      return;
+    }
     const old_price = this.price;
     const old_author = this.updator;
     this.price = new_price;
     this.updator = author;
 
-    db.exec("BEGIN");
-    db.run(`INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)`,
-      [this.id, old_price, old_author], (err, row) => {
-      if (err) {
-        db.exec("ROLLBACK");
-        this.price = old_price;
-        return;
-      }
-      db.run(`
-        UPDATE memes SET price = ?, last_updator = ? WHERE id = ?;`,
-        [new_price, author, this.id], (err, row) => {
+
+    db.serialize(() => {
+      db.run("BEGIN EXCLUSIVE");
+
+      db.run(`INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)`,
+        [this.id, old_price, old_author], (err, row) => {
         if (err) {
-          db.exec("ROLLBACK");
+          resolve();
+          db.run("ROLLBACK");
           this.price = old_price;
           this.updator = old_author;
           return;
         }
-        db.exec("COMMIT");
       });
+
+      db.run(`
+        UPDATE memes SET price = ?, last_updator = ? WHERE id = ?;`,
+        [new_price, author, this.id], (err, row) => {
+        if (err) {
+          resolve();
+          db.run("ROLLBACK");
+          this.price = old_price;
+          this.updator = old_author;
+          return;
+        }
+      });
+      db.run("COMMIT");
     });
+    resolve();
+    })
   }
 }
 

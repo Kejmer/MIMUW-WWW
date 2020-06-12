@@ -8,6 +8,7 @@
     "test": "npx mocha -r ts-node/register testy.ts"
   },
   "dependencies": {
+    "connect-sqlite3": "^0.9.11",
     "cookie-parser": "~1.4.4",
     "csurf": "^1.11.0",
     "debug": "~2.6.9",

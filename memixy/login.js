@@ -39,11 +39,10 @@ function newUser(db, username, password) {
             res(false);
             return;
         }
-        db.serialize(function () {
-            var hashed = hashPassword(password);
-            db.run("INSERT INTO users (username, hashed_pass) VALUES(?,?)", [username, hashed], function (err) {
-                res(!err);
-            });
+        var hashed = hashPassword(password);
+        // unikalność gwarantowana przez index
+        db.run("INSERT INTO users (username, hashed_pass) VALUES(?,?)", [username, hashed], function (err) {
+            res(!err);
         });
     });
 }

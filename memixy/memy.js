@@ -53,25 +53,27 @@ function createMemeTablesIfNeeded(db) {
                             return;
                         }
                         console.log('Creating database tables...');
-                        db.run("\n        CREATE TABLE history (\n          meme_id INTEGER NOT NULL,\n          price INTEGER NOT NULL,\n          created_at REAL NOT NULL,\n          author TEXT\n        )\n        ", [], function (err) {
-                            if (err) {
-                                reject('DB Error');
-                                return;
-                            }
+                        db.serialize(function () {
+                            db.run("\n          CREATE TABLE history (\n            meme_id INTEGER NOT NULL,\n            price INTEGER NOT NULL,\n            created_at REAL NOT NULL,\n            author TEXT\n          )\n          ", [], function (err) {
+                                if (err) {
+                                    reject('DB Error');
+                                    return;
+                                }
+                            });
                             db.run("\n        CREATE INDEX history_time_idx\n          ON history(created_at)\n        ", [], function (err) {
                                 if (err) {
                                     reject('DB Error');
                                     return;
                                 }
-                                db.run("\n            CREATE TABLE memes (\n              id INTEGER PRIMARY KEY,\n              name TEXT NOT NULL,\n              url TEXT NOT NULL,\n              price INTEGER NOT NULL,\n              last_updator TEXT\n            )", [], function (err) {
-                                    if (err) {
-                                        reject('DB Error');
-                                        return;
-                                    }
-                                    console.log('Done.');
-                                    memesInit(db);
-                                    resolve();
-                                });
+                            });
+                            db.run("\n          CREATE TABLE memes (\n            id INTEGER PRIMARY KEY,\n            name TEXT NOT NULL,\n            url TEXT NOT NULL,\n            price INTEGER NOT NULL,\n            last_updator TEXT\n          )", [], function (err) {
+                                if (err) {
+                                    reject('DB Error');
+                                    return;
+                                }
+                                console.log('Done.');
+                                memesInit(db);
+                                resolve();
                             });
                         });
                     });
@@ -137,28 +139,38 @@ var Meme = /** @class */ (function () {
     };
     Meme.prototype.setPrice = function (db, new_price, author) {
         var _this = this;
-        if (new_price == this.price || new_price < 0)
-            return;
-        var old_price = this.price;
-        var old_author = this.updator;
-        this.price = new_price;
-        this.updator = author;
-        db.exec("BEGIN");
-        db.run("INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)", [this.id, old_price, old_author], function (err, row) {
-            if (err) {
-                db.exec("ROLLBACK");
-                _this.price = old_price;
+        return new Promise(function (resolve, reject) {
+            if (new_price == _this.price || new_price < 0) {
+                resolve();
                 return;
             }
-            db.run("\n        UPDATE memes SET price = ?, last_updator = ? WHERE id = ?;", [new_price, author, _this.id], function (err, row) {
-                if (err) {
-                    db.exec("ROLLBACK");
-                    _this.price = old_price;
-                    _this.updator = old_author;
-                    return;
-                }
-                db.exec("COMMIT");
+            var old_price = _this.price;
+            var old_author = _this.updator;
+            _this.price = new_price;
+            _this.updator = author;
+            db.serialize(function () {
+                db.run("BEGIN EXCLUSIVE");
+                db.run("INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)", [_this.id, old_price, old_author], function (err, row) {
+                    if (err) {
+                        resolve();
+                        db.run("ROLLBACK");
+                        _this.price = old_price;
+                        _this.updator = old_author;
+                        return;
+                    }
+                });
+                db.run("\n        UPDATE memes SET price = ?, last_updator = ? WHERE id = ?;", [new_price, author, _this.id], function (err, row) {
+                    if (err) {
+                        resolve();
+                        db.run("ROLLBACK");
+                        _this.price = old_price;
+                        _this.updator = old_author;
+                        return;
+                    }
+                });
+                db.run("COMMIT");
             });
+            resolve();
         });
     };
     return Meme;

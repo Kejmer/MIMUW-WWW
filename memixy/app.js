@@ -45,6 +45,7 @@ var logger = require("morgan");
 var csurf = require("csurf");
 var sqlite = require("sqlite3");
 var session = require("express-session");
+var SQLiteStore = require('connect-sqlite3')(session);
 var User = require("./login");
 var app = express();
 var csrfProtection = csurf({ cookie: true });
@@ -54,7 +55,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(logger('dev'));
-app.use(session({ secret: "deadBEEF4242424242424242", resave: false, saveUninitialized: false }));
+app.use(session({ secret: "deadBEEF4242424242424242", resave: false, saveUninitialized: false, store: new SQLiteStore }));
 app.use(express.static(path.join(__dirname, 'public')));
 sqlite.verbose();
 var db = new sqlite.Database('memes.db');
@@ -129,9 +130,11 @@ memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, v
                                         next(createError(404));
                                         return [2 /*return*/];
                                     }
-                                    pickedMeme.setPrice(db, price, req.session.user);
-                                    return [4 /*yield*/, pickedMeme.getHistory(db)];
+                                    return [4 /*yield*/, pickedMeme.setPrice(db, price, req.session.user)];
                                 case 2:
+                                    _a.sent();
+                                    return [4 /*yield*/, pickedMeme.getHistory(db)];
+                                case 3:
                                     history = _a.sent();
                                     res.render('meme', { meme: pickedMeme, history: history, csrfToken: req.csrfToken() });
                                     return [2 /*return*/];

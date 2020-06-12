@@ -8,6 +8,7 @@ import * as csurf from 'csurf';
 import type Meme from './memy';
 import * as sqlite from 'sqlite3';
 import * as session from 'express-session';
+var SQLiteStore = require('connect-sqlite3')(session);
 import * as User from './login'
 
 
@@ -21,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(logger('dev'));
-app.use(session({secret: "deadBEEF4242424242424242", resave: false, saveUninitialized: false}))
+app.use(session({secret: "deadBEEF4242424242424242", resave: false, saveUninitialized: false, store: new SQLiteStore}))
 app.use(express.static(path.join(__dirname, 'public')));
 
 sqlite.verbose();
@@ -72,7 +73,7 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
       next(createError(404));
       return;
     }
-    pickedMeme.setPrice(db, price, req.session.user);
+    await pickedMeme.setPrice(db, price, req.session.user);
 
     const history = await pickedMeme.getHistory(db);
     res.render('meme', {meme: pickedMeme, history: history, csrfToken: req.csrfToken()});
