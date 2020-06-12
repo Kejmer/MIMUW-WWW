@@ -73,8 +73,10 @@ memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, v
                                 case 0: return [4 /*yield*/, memer.getBest(db)];
                                 case 1:
                                     myBest = _a.sent();
-                                    if (myBest === undefined)
+                                    if (myBest === undefined) {
                                         next(createError(500));
+                                        return [2 /*return*/];
+                                    }
                                     res.render('meme_index', { memes: myBest, title: "memy" });
                                     return [2 /*return*/];
                             }
@@ -91,12 +93,13 @@ memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, v
                                     return [4 /*yield*/, memer.getMeme(db, id)];
                                 case 1:
                                     pickedMeme = _a.sent();
-                                    if (pickedMeme === undefined)
+                                    if (pickedMeme === undefined) {
                                         next(createError(404));
+                                        return [2 /*return*/];
+                                    }
                                     return [4 /*yield*/, pickedMeme.getHistory(db)];
                                 case 2:
                                     history = _a.sent();
-                                    console.log(history);
                                     res.render('meme', { meme: pickedMeme, history: history, csrfToken: req.csrfToken() });
                                     return [2 /*return*/];
                             }
@@ -111,16 +114,21 @@ memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, v
                                 case 0:
                                     if (!req.session.user) {
                                         next(createError(401));
+                                        return [2 /*return*/];
                                     }
                                     id = parseInt(req.params.memeId, 10);
-                                    if (isNaN(req.body.price))
+                                    if (isNaN(req.body.price)) {
                                         next(createError(400));
+                                        return [2 /*return*/];
+                                    }
                                     price = req.body.price;
                                     return [4 /*yield*/, memer.getMeme(db, id)];
                                 case 1:
                                     pickedMeme = _a.sent();
-                                    if (pickedMeme === undefined)
+                                    if (pickedMeme === undefined) {
                                         next(createError(404));
+                                        return [2 /*return*/];
+                                    }
                                     pickedMeme.setPrice(db, price, req.session.user);
                                     return [4 /*yield*/, pickedMeme.getHistory(db)];
                                 case 2:
@@ -187,6 +195,7 @@ memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, v
                                 return [4 /*yield*/, User.newUser(db, username, password)];
                             case 1:
                                 if (_a.sent()) {
+                                    req.session.user = username;
                                     res.redirect("/");
                                 }
                                 else {

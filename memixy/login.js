@@ -1,6 +1,7 @@
 "use strict";
 exports.__esModule = true;
 exports.login = exports.newUser = exports.validateUsername = exports.createLoginTables = void 0;
+var crypto = require("crypto");
 function createLoginTables(db) {
     return new Promise(function (res, rej) {
         db.all("SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type='table' AND name = 'users';", function (err, rows) {
@@ -30,7 +31,10 @@ function validateUsername(username) {
 }
 exports.validateUsername = validateUsername;
 function hashPassword(password) {
-    return password;
+    console.log(password);
+    console.log("is now");
+    console.log(crypto.createHash('sha1').update(password).digest('hex'));
+    return crypto.createHash('sha1').update(password).digest('hex');
 }
 function newUser(db, username, password) {
     return new Promise(function (res, rej) {
@@ -38,13 +42,14 @@ function newUser(db, username, password) {
             res(false);
             return;
         }
+        console.log(username + " nowy user");
         var hashed = hashPassword(password);
         db.get("SELECT 1 as one FROM 'users' WHERE username = ?", [username], function (err, row) {
             if (row || err) { // konto już istnieje
                 res(false);
                 return;
             }
-            db.run("INSERT INTO users (username, hashed_pass) VALUES(?,?)", [username, password], function (err) {
+            db.run("INSERT INTO users (username, hashed_pass) VALUES(?,?)", [username, hashed], function (err) {
                 res(!err);
             });
         });

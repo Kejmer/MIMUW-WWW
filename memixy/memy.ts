@@ -131,11 +131,13 @@ export default class Meme {
   setPrice(db: sqlite.Database, new_price: number, author: string) {
     if (new_price == this.price || new_price < 0) return;
     const old_price = this.price;
+    const old_author = this.updator;
     this.price = new_price;
+    this.updator = author;
 
     db.exec("BEGIN");
     db.run(`INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)`,
-      [this.id, old_price, this.updator], (err, row) => {
+      [this.id, old_price, old_author], (err, row) => {
       if (err) {
         db.exec("ROLLBACK");
         this.price = old_price;
@@ -147,10 +149,10 @@ export default class Meme {
         if (err) {
           db.exec("ROLLBACK");
           this.price = old_price;
+          this.updator = old_author;
           return;
         }
         db.exec("COMMIT");
-        this.updator = author;
       });
     });
   }

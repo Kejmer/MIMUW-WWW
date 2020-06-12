@@ -34,8 +34,10 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
 
   app.get('/', async function(req, res, next) {
     const myBest = await memer.getBest(db);
-    if (myBest === undefined)
+    if (myBest === undefined) {
       next(createError(500));
+      return;
+    }
     res.render('meme_index', {memes: myBest, title: "memy"});
   });
 
@@ -43,8 +45,10 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
     const id = parseInt(req.params.memeId, 10);
 
     const pickedMeme = await memer.getMeme(db,id);
-    if (pickedMeme === undefined)
+    if (pickedMeme === undefined) {
       next(createError(404));
+      return;
+    }
 
     const history = await pickedMeme.getHistory(db);
     res.render('meme', {meme: pickedMeme, history: history, csrfToken: req.csrfToken()});
@@ -53,16 +57,21 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
   app.post('/meme/:memeId(\\d+)', csrfProtection, async function (req, res, next) {
     if (!req.session.user) {
       next(createError(401));
+      return;
     }
 
     const id = parseInt(req.params.memeId, 10);
-    if (isNaN(req.body.price))
+    if (isNaN(req.body.price)) {
       next(createError(400));
+      return;
+    }
     const price = req.body.price;
 
     const pickedMeme = await memer.getMeme(db,id);
-    if (pickedMeme === undefined)
+    if (pickedMeme === undefined) {
       next(createError(404));
+      return;
+    }
     pickedMeme.setPrice(db, price, req.session.user);
 
     const history = await pickedMeme.getHistory(db);
@@ -117,6 +126,7 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
     let password = req.body.password;
 
     if (await User.newUser(db, username, password)) {
+      req.session.user = username;
       res.redirect("/");
     } else {
       res.render('register', {title: "Użytkownik już istnieje"});

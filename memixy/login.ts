@@ -1,5 +1,5 @@
 import * as sqlite from 'sqlite3';
-
+import * as crypto from 'crypto';
 
 export function createLoginTables(db: sqlite.Database) : Promise<void> {
   return new Promise((res, rej) => {
@@ -38,7 +38,7 @@ export function validateUsername(username: string) : boolean {
 }
 
 function hashPassword(password: string) : string {
-  return password;
+  return crypto.createHash('sha1').update(password).digest('hex');
 }
 
 export function newUser(db: sqlite.Database, username: string, password: string) : Promise<boolean> {
@@ -54,7 +54,7 @@ export function newUser(db: sqlite.Database, username: string, password: string)
         res(false);
         return;
       }
-      db.run(`INSERT INTO users (username, hashed_pass) VALUES(?,?)`, [username, password], (err: any) => {
+      db.run(`INSERT INTO users (username, hashed_pass) VALUES(?,?)`, [username, hashed], (err: any) => {
         res(!err);
       })
     })
