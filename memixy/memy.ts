@@ -1,9 +1,8 @@
 import * as sqlite from 'sqlite3';
 
-
-
 export async function createMemeTablesIfNeeded(db: sqlite.Database): Promise<void> {
   return new Promise((resolve, reject) => {
+    console.log("START");
     db.all(`SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type='table' AND name IN ('memes', 'history');`, (err, rows) => {
       if (err) {
         reject('DB Error');
@@ -36,25 +35,24 @@ export async function createMemeTablesIfNeeded(db: sqlite.Database): Promise<voi
             reject('DB Error');
             return;
           }
+          db.run(`
+            CREATE TABLE memes (
+              id INTEGER PRIMARY KEY,
+              name TEXT NOT NULL,
+              url TEXT NOT NULL,
+              price INTEGER NOT NULL)`
+            , [], (err: any) => {
+              if (err) {
+                reject('DB Error');
+                return;
+              }
+              console.log('Done.');
+
+              memesInit(db);
+              resolve();
+            });
         });
       });
-
-      db.run(`
-        CREATE TABLE memes (
-          id INTEGER PRIMARY KEY,
-          name TEXT NOT NULL,
-          url TEXT NOT NULL,
-          price INTEGER NOT NULL)`
-        , [], (err: any) => {
-          if (err) {
-            reject('DB Error');
-            return;
-          }
-          console.log('Done.');
-
-          memesInit(db);
-          resolve();
-        });
     });
   });
 }
@@ -150,10 +148,8 @@ export default class Meme {
 }
 
 export function newMeme(db: sqlite.Database, name: string, url: string, price: number) {
-  console.log("New meme");
   db.run(`INSERT INTO memes (name, url, price) VALUES(?, ?, ?)
-  `, [name, url, price], (err, row) => {
-  });
+  `, [name, url, price], (err, row) => {});
 }
 
 function memesInit(db: sqlite.Database) {
@@ -177,9 +173,19 @@ export function getBest(db: sqlite.Database) : Promise<Meme[]> {
         reject(err);
         return;
       }
-      let result = [];
-      row.forEach(r => result.push(memeFromRow(r)))
-      resolve(result);
+      resolve(row.map(r => memeFromRow(r)));
+    });
+  });
+}
+
+export function allMemes(db: sqlite.Database) : Promise<Meme[]> {
+  return new Promise((resolve, reject) => {
+    db.all(`SELECT * FROM memes`, [], (err, row) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(row.map(r => memeFromRow(r)));
     });
   });
 }

@@ -36,11 +36,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getBest = exports.newMeme = exports.getMeme = exports.createMemeTablesIfNeeded = void 0;
+exports.allMemes = exports.getBest = exports.newMeme = exports.getMeme = exports.createMemeTablesIfNeeded = void 0;
 function createMemeTablesIfNeeded(db) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (resolve, reject) {
+                    console.log("START");
                     db.all("SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type='table' AND name IN ('memes', 'history');", function (err, rows) {
                         if (err) {
                             reject('DB Error');
@@ -62,16 +63,16 @@ function createMemeTablesIfNeeded(db) {
                                     reject('DB Error');
                                     return;
                                 }
+                                db.run("\n            CREATE TABLE memes (\n              id INTEGER PRIMARY KEY,\n              name TEXT NOT NULL,\n              url TEXT NOT NULL,\n              price INTEGER NOT NULL)", [], function (err) {
+                                    if (err) {
+                                        reject('DB Error');
+                                        return;
+                                    }
+                                    console.log('Done.');
+                                    memesInit(db);
+                                    resolve();
+                                });
                             });
-                        });
-                        db.run("\n        CREATE TABLE memes (\n          id INTEGER PRIMARY KEY,\n          name TEXT NOT NULL,\n          url TEXT NOT NULL,\n          price INTEGER NOT NULL)", [], function (err) {
-                            if (err) {
-                                reject('DB Error');
-                                return;
-                            }
-                            console.log('Done.');
-                            memesInit(db);
-                            resolve();
                         });
                     });
                 })];
@@ -157,9 +158,7 @@ var Meme = /** @class */ (function () {
 }());
 exports["default"] = Meme;
 function newMeme(db, name, url, price) {
-    console.log("New meme");
-    db.run("INSERT INTO memes (name, url, price) VALUES(?, ?, ?)\n  ", [name, url, price], function (err, row) {
-    });
+    db.run("INSERT INTO memes (name, url, price) VALUES(?, ?, ?)\n  ", [name, url, price], function (err, row) { });
 }
 exports.newMeme = newMeme;
 function memesInit(db) {
@@ -182,10 +181,20 @@ function getBest(db) {
                 reject(err);
                 return;
             }
-            var result = [];
-            row.forEach(function (r) { return result.push(memeFromRow(r)); });
-            resolve(result);
+            resolve(row.map(function (r) { return memeFromRow(r); }));
         });
     });
 }
 exports.getBest = getBest;
+function allMemes(db) {
+    return new Promise(function (resolve, reject) {
+        db.all("SELECT * FROM memes", [], function (err, row) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(row.map(function (r) { return memeFromRow(r); }));
+        });
+    });
+}
+exports.allMemes = allMemes;

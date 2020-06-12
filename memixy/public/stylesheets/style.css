@@ -42,3 +42,17 @@ form, .center {
 .form-group {
   padding-bottom: 10px;
 }
+
+#home {
+  text-align: center;
+  width: 100%;
+  color: black;
+  font-size: 30px;
+}
+
+nav a {
+  margin: auto;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: inherit;
+}

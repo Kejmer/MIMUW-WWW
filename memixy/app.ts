@@ -1,7 +1,9 @@
 import * as createError from 'http-errors';
 import * as express from 'express';
 import * as path from 'path';
+import * as cookieParser from 'cookie-parser';
 import * as memer from './memy';
+import * as logger from 'morgan';
 import * as csurf from 'csurf';
 import type Meme from './memy';
 import * as sqlite from 'sqlite3';
@@ -15,6 +17,8 @@ app.set('view engine', 'pug');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(logger('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 sqlite.verbose();
