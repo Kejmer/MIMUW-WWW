@@ -29,7 +29,7 @@ th {
 }
 
 
-#price {
+.history_field {
   text-align: center;
   font-size: 20px;
   font-weight: bold;
@@ -55,4 +55,9 @@ nav a {
   text-transform: uppercase;
   text-decoration: none;
   color: inherit;
+  padding: 10px 40px;
+}
+
+nav form {
+  display: inline;
 }

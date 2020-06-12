@@ -53,7 +53,7 @@ function createMemeTablesIfNeeded(db) {
                             return;
                         }
                         console.log('Creating database tables...');
-                        db.run("\n        CREATE TABLE history (\n          meme_id INTEGER NOT NULL,\n          price INTEGER NOT NULL,\n          created_at REAL NOT NULL\n        )\n        ", [], function (err) {
+                        db.run("\n        CREATE TABLE history (\n          meme_id INTEGER NOT NULL,\n          price INTEGER NOT NULL,\n          created_at REAL NOT NULL,\n          author TEXT\n        )\n        ", [], function (err) {
                             if (err) {
                                 reject('DB Error');
                                 return;
@@ -63,7 +63,7 @@ function createMemeTablesIfNeeded(db) {
                                     reject('DB Error');
                                     return;
                                 }
-                                db.run("\n            CREATE TABLE memes (\n              id INTEGER PRIMARY KEY,\n              name TEXT NOT NULL,\n              url TEXT NOT NULL,\n              price INTEGER NOT NULL)", [], function (err) {
+                                db.run("\n            CREATE TABLE memes (\n              id INTEGER PRIMARY KEY,\n              name TEXT NOT NULL,\n              url TEXT NOT NULL,\n              price INTEGER NOT NULL,\n              last_updator TEXT\n            )", [], function (err) {
                                     if (err) {
                                         reject('DB Error');
                                         return;
@@ -81,7 +81,7 @@ function createMemeTablesIfNeeded(db) {
 }
 exports.createMemeTablesIfNeeded = createMemeTablesIfNeeded;
 function memeFromRow(row) {
-    return new Meme(row.id, row.name, row.url, row.price);
+    return new Meme(row.id, row.name, row.url, row.price, row.last_updator);
 }
 function getMeme(db, id) {
     return new Promise(function (resolve, reject) {
@@ -101,11 +101,12 @@ function getMeme(db, id) {
 }
 exports.getMeme = getMeme;
 var Meme = /** @class */ (function () {
-    function Meme(id, name, file_name, price) {
+    function Meme(id, name, file_name, price, updator) {
         this.id = id;
         this.name = name;
         this.file_name = file_name;
         this.price = price;
+        this.updator = updator;
     }
     Meme.prototype.getId = function () {
         return this.id;
@@ -119,60 +120,64 @@ var Meme = /** @class */ (function () {
     Meme.prototype.getFileName = function () {
         return this.file_name;
     };
+    Meme.prototype.getUpdator = function () {
+        return this.updator;
+    };
     Meme.prototype.getHistory = function (db) {
         var _this = this;
         return new Promise(function (resolve, reject) {
-            db.all('SELECT price FROM history WHERE meme_id = ? ORDER BY created_at DESC', [_this.id], function (err, row) {
+            db.all('SELECT price, author FROM history WHERE meme_id = ? ORDER BY created_at DESC', [_this.id], function (err, row) {
                 if (err) {
                     reject(err);
                     return;
                 }
-                resolve(row.map(function (obj) { return obj.price; }));
+                resolve(row);
             });
         });
     };
-    Meme.prototype.setPrice = function (db, new_price) {
+    Meme.prototype.setPrice = function (db, new_price, author) {
         var _this = this;
         if (new_price == this.price || new_price < 0)
             return;
         var old_price = this.price;
         this.price = new_price;
         db.exec("BEGIN");
-        db.run("INSERT INTO history (meme_id, price, created_at) VALUES(?, ?, date('now'))", [this.id, old_price], function (err, row) {
+        db.run("INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)", [this.id, old_price, this.updator], function (err, row) {
             if (err) {
                 db.exec("ROLLBACK");
                 _this.price = old_price;
                 return;
             }
-            db.run("\n        UPDATE memes SET price = ? WHERE id = ?;", [new_price, _this.id], function (err, row) {
+            db.run("\n        UPDATE memes SET price = ?, last_updator = ? WHERE id = ?;", [new_price, author, _this.id], function (err, row) {
                 if (err) {
                     db.exec("ROLLBACK");
                     _this.price = old_price;
                     return;
                 }
                 db.exec("COMMIT");
+                _this.updator = author;
             });
         });
     };
     return Meme;
 }());
 exports["default"] = Meme;
-function newMeme(db, name, url, price) {
-    db.run("INSERT INTO memes (name, url, price) VALUES(?, ?, ?)\n  ", [name, url, price], function (err, row) { });
+function newMeme(db, name, url, price, author) {
+    db.run("INSERT INTO memes (name, url, price, last_updator) VALUES(?, ?, ?, ?)\n  ", [name, url, price, author], function (err, row) { });
 }
 exports.newMeme = newMeme;
 function memesInit(db) {
-    newMeme(db, "42", "42.jpg", 42);
-    newMeme(db, "Cyberksio", "cyberpunk.png", 13);
-    newMeme(db, "Frontend", "frontend.png", 1023);
-    newMeme(db, "Before and after", "math.jpg", 1);
-    newMeme(db, "Teoria mnogosci", "mnogosc.jpg", 412);
-    newMeme(db, "Piasek", "plaza.jpg", 551);
-    newMeme(db, "Perspektywa bułki", "pov.png", 112);
-    newMeme(db, "Papier toaletowy", "pqpi34.jpg", 152);
-    newMeme(db, "Sratch chad", "scratch.png", 1020);
-    newMeme(db, "Vim", "vim.png", 0);
-    newMeme(db, "Bledy kompilacji", "znowu_oni.png", 1822);
+    newMeme(db, "42", "42.jpg", 42, "admin");
+    newMeme(db, "Cyberksio", "cyberpunk.png", 13, "admin");
+    newMeme(db, "Frontend", "frontend.png", 1023, "admin");
+    newMeme(db, "Before and after", "math.jpg", 1, "admin");
+    newMeme(db, "Teoria mnogosci", "mnogosc.jpg", 412, "admin");
+    newMeme(db, "Piasek", "plaza.jpg", 551, "admin");
+    newMeme(db, "Perspektywa bułki", "pov.png", 112, "admin");
+    newMeme(db, "Papier toaletowy", "pqpi34.jpg", 152, "admin");
+    newMeme(db, "Sratch chad", "scratch.png", 1020, "admin");
+    newMeme(db, "Vim", "vim.png", 0, "admin");
+    newMeme(db, "Bledy kompilacji", "znowu_oni.png", 1822, "admin");
 }
 function getBest(db) {
     return new Promise(function (resolve, reject) {

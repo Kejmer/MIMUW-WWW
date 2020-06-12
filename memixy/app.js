@@ -44,6 +44,8 @@ var memer = require("./memy");
 var logger = require("morgan");
 var csurf = require("csurf");
 var sqlite = require("sqlite3");
+var session = require("express-session");
+var User = require("./login");
 var app = express();
 var csrfProtection = csurf({ cookie: true });
 app.set('views', path.join(__dirname, 'views'));
@@ -52,90 +54,164 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(logger('dev'));
+app.use(session({ secret: "deadBEEF4242424242424242", resave: false, saveUninitialized: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 sqlite.verbose();
 var db = new sqlite.Database('memes.db');
 memer.createMemeTablesIfNeeded(db).then(function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        // view engine setup
-        app.get('/', function (req, res, next) {
-            return __awaiter(this, void 0, void 0, function () {
-                var myBest;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, memer.getBest(db)];
-                        case 1:
-                            myBest = _a.sent();
-                            if (myBest === undefined)
-                                next(createError(500));
-                            res.render('meme_index', { memes: myBest, title: "memy" });
-                            return [2 /*return*/];
-                    }
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, User.createLoginTables(db)];
+            case 1:
+                _a.sent();
+                // view engine setup
+                app.get('/', function (req, res, next) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var myBest;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, memer.getBest(db)];
+                                case 1:
+                                    myBest = _a.sent();
+                                    if (myBest === undefined)
+                                        next(createError(500));
+                                    res.render('meme_index', { memes: myBest, title: "memy" });
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
                 });
-            });
-        });
-        app.get('/meme/:memeId(\\d+)', csrfProtection, function (req, res, next) {
-            return __awaiter(this, void 0, void 0, function () {
-                var id, pickedMeme, history;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            id = parseInt(req.params.memeId, 10);
-                            return [4 /*yield*/, memer.getMeme(db, id)];
-                        case 1:
-                            pickedMeme = _a.sent();
-                            if (pickedMeme === undefined)
-                                next(createError(404));
-                            return [4 /*yield*/, pickedMeme.getHistory(db)];
-                        case 2:
-                            history = _a.sent();
-                            console.log(history);
-                            res.render('meme', { meme: pickedMeme, history: history, csrfToken: req.csrfToken() });
-                            return [2 /*return*/];
-                    }
+                app.get('/meme/:memeId(\\d+)', csrfProtection, function (req, res, next) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var id, pickedMeme, history;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    id = parseInt(req.params.memeId, 10);
+                                    return [4 /*yield*/, memer.getMeme(db, id)];
+                                case 1:
+                                    pickedMeme = _a.sent();
+                                    if (pickedMeme === undefined)
+                                        next(createError(404));
+                                    return [4 /*yield*/, pickedMeme.getHistory(db)];
+                                case 2:
+                                    history = _a.sent();
+                                    console.log(history);
+                                    res.render('meme', { meme: pickedMeme, history: history, csrfToken: req.csrfToken() });
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
                 });
-            });
-        });
-        app.post('/meme/:memeId(\\d+)', csrfProtection, function (req, res, next) {
-            return __awaiter(this, void 0, void 0, function () {
-                var id, price, pickedMeme, history;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            id = parseInt(req.params.memeId, 10);
-                            if (isNaN(req.body.price))
-                                next(createError(400));
-                            price = req.body.price;
-                            return [4 /*yield*/, memer.getMeme(db, id)];
-                        case 1:
-                            pickedMeme = _a.sent();
-                            if (pickedMeme === undefined)
-                                next(createError(404));
-                            pickedMeme.setPrice(db, price);
-                            return [4 /*yield*/, pickedMeme.getHistory(db)];
-                        case 2:
-                            history = _a.sent();
-                            res.render('meme', { meme: pickedMeme, history: history, csrfToken: req.csrfToken() });
-                            return [2 /*return*/];
-                    }
+                app.post('/meme/:memeId(\\d+)', csrfProtection, function (req, res, next) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var id, price, pickedMeme, history;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (!req.session.user) {
+                                        next(createError(401));
+                                    }
+                                    id = parseInt(req.params.memeId, 10);
+                                    if (isNaN(req.body.price))
+                                        next(createError(400));
+                                    price = req.body.price;
+                                    return [4 /*yield*/, memer.getMeme(db, id)];
+                                case 1:
+                                    pickedMeme = _a.sent();
+                                    if (pickedMeme === undefined)
+                                        next(createError(404));
+                                    pickedMeme.setPrice(db, price, req.session.user);
+                                    return [4 /*yield*/, pickedMeme.getHistory(db)];
+                                case 2:
+                                    history = _a.sent();
+                                    res.render('meme', { meme: pickedMeme, history: history, csrfToken: req.csrfToken() });
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
                 });
-            });
-        });
-        // catch 404 and forward to error handler
-        app.use(function (req, res, next) {
-            next(createError(404));
-        });
-        // error handler
-        app.use(function (err, req, res, next) {
-            // set locals, only providing error in development
-            console.log("ERROR");
-            res.locals.message = err.message;
-            res.locals.error = req.app.get('env') === 'development' ? err : {};
-            // render the error page
-            res.status(err.status || 500);
-            res.render('error');
-        });
-        return [2 /*return*/];
+                app.get('/login', function (req, res) {
+                    if (req.session.user) {
+                        res.redirect("/");
+                        return;
+                    }
+                    res.render('login', { title: "Logowanie" });
+                });
+                app.post('/login', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+                    var username, password;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (req.session.user) {
+                                    res.redirect("/");
+                                    return [2 /*return*/];
+                                }
+                                username = req.body.username;
+                                password = req.body.password;
+                                return [4 /*yield*/, User.login(db, username, password)];
+                            case 1:
+                                if (_a.sent()) {
+                                    req.session.user = username;
+                                    res.redirect("/");
+                                }
+                                else {
+                                    res.render('login', { title: "Błędne dane logowania" });
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                app.post('/logout', function (req, res) {
+                    req.session.user = false;
+                    res.redirect("/");
+                });
+                app.get('/register', function (req, res) {
+                    if (req.session.user) {
+                        res.redirect("/");
+                        return;
+                    }
+                    res.render('register', { title: "Zarejestruj się!" });
+                });
+                app.post('/register', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+                    var username, password;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (req.session.user) {
+                                    res.redirect("/");
+                                    return [2 /*return*/];
+                                }
+                                username = req.body.username;
+                                password = req.body.password;
+                                return [4 /*yield*/, User.newUser(db, username, password)];
+                            case 1:
+                                if (_a.sent()) {
+                                    res.redirect("/");
+                                }
+                                else {
+                                    res.render('register', { title: "Użytkownik już istnieje" });
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                // catch 404 and forward to error handler
+                app.use(function (req, res, next) {
+                    next(createError(404));
+                });
+                // error handler
+                app.use(function (err, req, res, next) {
+                    // set locals, only providing error in development
+                    console.log("ERROR");
+                    res.locals.message = err.message;
+                    res.locals.error = req.app.get('env') === 'development' ? err : {};
+                    // render the error page
+                    res.status(err.status || 500);
+                    res.render('error');
+                });
+                return [2 /*return*/];
+        }
     });
 }); });
 module.exports = app;

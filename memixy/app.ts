@@ -7,6 +7,8 @@ import * as logger from 'morgan';
 import * as csurf from 'csurf';
 import type Meme from './memy';
 import * as sqlite from 'sqlite3';
+import * as session from 'express-session';
+import * as User from './login'
 
 
 const app = express();
@@ -19,12 +21,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(logger('dev'));
+app.use(session({secret: "deadBEEF4242424242424242", resave: false, saveUninitialized: false}))
 app.use(express.static(path.join(__dirname, 'public')));
 
 sqlite.verbose();
 const db = new sqlite.Database('memes.db');
 
+
 memer.createMemeTablesIfNeeded(db).then(async () => {
+  await User.createLoginTables(db);
   // view engine setup
 
   app.get('/', async function(req, res, next) {
@@ -42,11 +47,14 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
       next(createError(404));
 
     const history = await pickedMeme.getHistory(db);
-    console.log(history);
     res.render('meme', {meme: pickedMeme, history: history, csrfToken: req.csrfToken()});
   });
 
   app.post('/meme/:memeId(\\d+)', csrfProtection, async function (req, res, next) {
+    if (!req.session.user) {
+      next(createError(401));
+    }
+
     const id = parseInt(req.params.memeId, 10);
     if (isNaN(req.body.price))
       next(createError(400));
@@ -55,10 +63,64 @@ memer.createMemeTablesIfNeeded(db).then(async () => {
     const pickedMeme = await memer.getMeme(db,id);
     if (pickedMeme === undefined)
       next(createError(404));
-    pickedMeme.setPrice(db, price);
+    pickedMeme.setPrice(db, price, req.session.user);
 
     const history = await pickedMeme.getHistory(db);
     res.render('meme', {meme: pickedMeme, history: history, csrfToken: req.csrfToken()});
+
+  });
+
+  app.get('/login', (req, res) => {
+    if (req.session.user) {
+      res.redirect("/");
+      return;
+    }
+    res.render('login', {title: "Logowanie"});
+  });
+
+  app.post('/login', async (req, res, next) => {
+    if (req.session.user) {
+      res.redirect("/");
+      return;
+    }
+    let username = req.body.username;
+    let password = req.body.password;
+
+    if (await User.login(db, username, password)) {
+      req.session.user = username;
+      res.redirect("/");
+    } else {
+      res.render('login', {title: "Błędne dane logowania"});
+    }
+  });
+
+  app.post('/logout', (req, res) => {
+    req.session.user = false;
+    res.redirect("/");
+  });
+
+  app.get('/register', (req, res) => {
+    if (req.session.user) {
+      res.redirect("/");
+      return;
+    }
+    res.render('register', {title: "Zarejestruj się!"});
+  });
+
+  app.post('/register', async (req, res, next) => {
+    if (req.session.user) {
+      res.redirect("/");
+      return;
+    }
+
+    let username = req.body.username;
+    let password = req.body.password;
+
+    if (await User.newUser(db, username, password)) {
+      res.redirect("/");
+    } else {
+      res.render('register', {title: "Użytkownik już istnieje"});
+    }
 
   });
 

@@ -20,7 +20,8 @@ export async function createMemeTablesIfNeeded(db: sqlite.Database): Promise<voi
         CREATE TABLE history (
           meme_id INTEGER NOT NULL,
           price INTEGER NOT NULL,
-          created_at REAL NOT NULL
+          created_at REAL NOT NULL,
+          author TEXT
         )
         `, [], (err: any) => {
           if (err) {
@@ -40,7 +41,9 @@ export async function createMemeTablesIfNeeded(db: sqlite.Database): Promise<voi
               id INTEGER PRIMARY KEY,
               name TEXT NOT NULL,
               url TEXT NOT NULL,
-              price INTEGER NOT NULL)`
+              price INTEGER NOT NULL,
+              last_updator TEXT
+            )`
             , [], (err: any) => {
               if (err) {
                 reject('DB Error');
@@ -58,7 +61,7 @@ export async function createMemeTablesIfNeeded(db: sqlite.Database): Promise<voi
 }
 
 function memeFromRow(row) : Meme {
-  return new Meme(row.id, row.name, row.url, row.price);
+  return new Meme(row.id, row.name, row.url, row.price, row.last_updator);
 }
 
 export function getMeme(db: sqlite.Database, id: number): Promise<Meme | undefined> {
@@ -83,13 +86,14 @@ export default class Meme {
   private name: string;
   private file_name: string;
   private price : number;
+  private updator : string;
 
-
-  constructor(id: number, name : string, file_name : string, price : number) {
+  constructor(id: number, name : string, file_name : string, price : number, updator: string) {
     this.id = id;
     this.name = name;
     this.file_name = file_name;
     this.price = price;
+    this.updator = updator;
   }
 
   getId() {
@@ -108,62 +112,67 @@ export default class Meme {
     return this.file_name;
   }
 
+  getUpdator() {
+    return this.updator;
+  }
+
   getHistory(db: sqlite.Database) : Promise<number[]> {
     return new Promise((resolve, reject) => {
-      db.all('SELECT price FROM history WHERE meme_id = ? ORDER BY created_at DESC', [this.id], (err,row) => {
+      db.all('SELECT price, author FROM history WHERE meme_id = ? ORDER BY created_at DESC', [this.id], (err,row) => {
         if (err) {
           reject(err);
           return;
         }
-        resolve(row.map(obj => obj.price));
+        resolve(row);
       });
     });
   }
 
-  setPrice(db: sqlite.Database, new_price: number) {
+  setPrice(db: sqlite.Database, new_price: number, author: string) {
     if (new_price == this.price || new_price < 0) return;
     const old_price = this.price;
     this.price = new_price;
 
     db.exec("BEGIN");
-    db.run(`INSERT INTO history (meme_id, price, created_at) VALUES(?, ?, date('now'))`,
-      [this.id, old_price], (err, row) => {
+    db.run(`INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)`,
+      [this.id, old_price, this.updator], (err, row) => {
       if (err) {
         db.exec("ROLLBACK");
         this.price = old_price;
         return;
       }
       db.run(`
-        UPDATE memes SET price = ? WHERE id = ?;`,
-        [new_price, this.id], (err, row) => {
+        UPDATE memes SET price = ?, last_updator = ? WHERE id = ?;`,
+        [new_price, author, this.id], (err, row) => {
         if (err) {
           db.exec("ROLLBACK");
           this.price = old_price;
           return;
         }
         db.exec("COMMIT");
+        this.updator = author;
       });
     });
   }
 }
 
-export function newMeme(db: sqlite.Database, name: string, url: string, price: number) {
-  db.run(`INSERT INTO memes (name, url, price) VALUES(?, ?, ?)
-  `, [name, url, price], (err, row) => {});
+export function newMeme(db: sqlite.Database, name: string, url: string, price: number, author: string) {
+  db.run(`INSERT INTO memes (name, url, price, last_updator) VALUES(?, ?, ?, ?)
+  `, [name, url, price, author], (err, row) => {});
 }
 
 function memesInit(db: sqlite.Database) {
-  newMeme(db, "42", "42.jpg", 42);
-  newMeme(db, "Cyberksio", "cyberpunk.png", 13);
-  newMeme(db, "Frontend", "frontend.png", 1023);
-  newMeme(db, "Before and after", "math.jpg", 1);
-  newMeme(db, "Teoria mnogosci", "mnogosc.jpg", 412);
-  newMeme(db, "Piasek", "plaza.jpg", 551);
-  newMeme(db, "Perspektywa bułki", "pov.png", 112);
-  newMeme(db, "Papier toaletowy", "pqpi34.jpg", 152);
-  newMeme(db, "Sratch chad", "scratch.png", 1020);
-  newMeme(db, "Vim", "vim.png", 0);
-  newMeme(db, "Bledy kompilacji", "znowu_oni.png", 1822);
+  newMeme(db, "42", "42.jpg", 42, "admin");
+  newMeme(db, "Cyberksio", "cyberpunk.png", 13, "admin");
+  newMeme(db, "Frontend", "frontend.png", 1023, "admin");
+  newMeme(db, "Before and after", "math.jpg", 1, "admin");
+  newMeme(db, "Teoria mnogosci", "mnogosc.jpg", 412, "admin");
+  newMeme(db, "Piasek", "plaza.jpg", 551, "admin");
+  newMeme(db, "Perspektywa bułki", "pov.png", 112, "admin");
+  newMeme(db, "Papier toaletowy", "pqpi34.jpg", 152, "admin");
+  newMeme(db, "Sratch chad", "scratch.png", 1020, "admin");
+  newMeme(db, "Vim", "vim.png", 0, "admin");
+  newMeme(db, "Bledy kompilacji", "znowu_oni.png", 1822, "admin");
 }
 
 export function getBest(db: sqlite.Database) : Promise<Meme[]> {

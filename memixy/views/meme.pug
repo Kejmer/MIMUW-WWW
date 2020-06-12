@@ -4,14 +4,14 @@ block content
   h1= meme.name
   img(src='../images/'+ meme.file_name href='meme/' + meme.id).resize_show
   h2.center Aktualna cena
-  p#price= meme.price
+  p.history_field= meme.updator + " " + meme.price
   br
   table
     tr
       th Historia poprzednich cen
     each entry in history
       tr
-        td#price= entry
+        td.history_field= entry.author + " " + entry.price
   form(method='POST' action='/meme/' + meme.id)
     input(type="hidden" name="_csrf" value=csrfToken)
     div.form-group
