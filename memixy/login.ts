@@ -34,7 +34,7 @@ export function createLoginTables(db: sqlite.Database) : Promise<void> {
 }
 
 export function validateUsername(username: string) : boolean {
-  return true;
+  return !!username.match(/^[0-9a-zA-Z]+$/);
 }
 
 function hashPassword(password: string) : string {
@@ -47,14 +47,20 @@ export function newUser(db: sqlite.Database, username: string, password: string)
       res(false);
       return;
     }
+    db.exec('BEGIN');
 
     let hashed = hashPassword(password);
     db.get(`SELECT 1 as one FROM 'users' WHERE username = ?`, [username], (err, row) => {
       if (row || err) { // konto już istnieje
+        db.exec('ROLLBACK');
         res(false);
         return;
       }
       db.run(`INSERT INTO users (username, hashed_pass) VALUES(?,?)`, [username, hashed], (err: any) => {
+        if (err)
+          db.exec('ROLLBACK');
+        else
+          db.exec('COMMIT');
         res(!err);
       })
     })

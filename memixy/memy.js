@@ -140,9 +140,11 @@ var Meme = /** @class */ (function () {
         if (new_price == this.price || new_price < 0)
             return;
         var old_price = this.price;
+        var old_author = this.updator;
         this.price = new_price;
+        this.updator = author;
         db.exec("BEGIN");
-        db.run("INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)", [this.id, old_price, this.updator], function (err, row) {
+        db.run("INSERT INTO history (meme_id, price, created_at, author) VALUES(?, ?, date('now'), ?)", [this.id, old_price, old_author], function (err, row) {
             if (err) {
                 db.exec("ROLLBACK");
                 _this.price = old_price;
@@ -152,10 +154,10 @@ var Meme = /** @class */ (function () {
                 if (err) {
                     db.exec("ROLLBACK");
                     _this.price = old_price;
+                    _this.updator = old_author;
                     return;
                 }
                 db.exec("COMMIT");
-                _this.updator = author;
             });
         });
     };

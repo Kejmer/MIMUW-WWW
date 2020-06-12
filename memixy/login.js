@@ -27,13 +27,10 @@ function createLoginTables(db) {
 }
 exports.createLoginTables = createLoginTables;
 function validateUsername(username) {
-    return true;
+    return !!username.match(/^[0-9a-zA-Z]+$/);
 }
 exports.validateUsername = validateUsername;
 function hashPassword(password) {
-    console.log(password);
-    console.log("is now");
-    console.log(crypto.createHash('sha1').update(password).digest('hex'));
     return crypto.createHash('sha1').update(password).digest('hex');
 }
 function newUser(db, username, password) {
@@ -42,7 +39,6 @@ function newUser(db, username, password) {
             res(false);
             return;
         }
-        console.log(username + " nowy user");
         var hashed = hashPassword(password);
         db.get("SELECT 1 as one FROM 'users' WHERE username = ?", [username], function (err, row) {
             if (row || err) { // konto już istnieje
