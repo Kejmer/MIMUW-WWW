@@ -14,7 +14,7 @@ function createLoginTables(db) {
                 res();
                 return;
             }
-            db.run("\n        CREATE TABLE users (\n          id INTEGER PRIMARY KEY,\n          username TEXT,\n          hashed_pass TEXT\n        )\n        ", [], function (err) {
+            db.run("\n        CREATE TABLE users (\n          id INTEGER PRIMARY KEY,\n          username TEXT UNIQUE,\n          hashed_pass TEXT\n        )\n        ", [], function (err) {
                 if (err) {
                     rej('DB Error');
                     return;
@@ -27,7 +27,7 @@ function createLoginTables(db) {
 }
 exports.createLoginTables = createLoginTables;
 function validateUsername(username) {
-    return !!username.match(/^[0-9a-zA-Z]+$/);
+    return !!username.match(/^[0-9a-zA-Z]+$/) && username !== "";
 }
 exports.validateUsername = validateUsername;
 function hashPassword(password) {
@@ -39,12 +39,8 @@ function newUser(db, username, password) {
             res(false);
             return;
         }
-        var hashed = hashPassword(password);
-        db.get("SELECT 1 as one FROM 'users' WHERE username = ?", [username], function (err, row) {
-            if (row || err) { // konto już istnieje
-                res(false);
-                return;
-            }
+        db.serialize(function () {
+            var hashed = hashPassword(password);
             db.run("INSERT INTO users (username, hashed_pass) VALUES(?,?)", [username, hashed], function (err) {
                 res(!err);
             });
