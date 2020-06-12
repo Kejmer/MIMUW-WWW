@@ -168,8 +168,8 @@ export default class Meme {
         }
       });
       db.run("COMMIT");
+      resolve();
     });
-    resolve();
     })
   }
 }
