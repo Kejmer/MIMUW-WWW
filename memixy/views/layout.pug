@@ -7,8 +7,10 @@ html
   body
     nav#home
       a(href="/") MEMIXY
-      a(href="/login") zaloguj
-      a(href="/register") rejestracja
-      form(method='POST' action='/logout')
-        button(type='submit') wyloguj
+      if !logged
+        a(href="/login") zaloguj
+      else
+        a(href="/register") rejestracja
+        form(method='POST' action='/logout')
+          button(type='submit') wyloguj
     block content

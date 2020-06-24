@@ -12,10 +12,11 @@ block content
     each entry in history
       tr
         td.history_field= entry.author + " " + entry.price
-  form(method='POST' action='/meme/' + meme.id)
-    input(type="hidden" name="_csrf" value=csrfToken)
-    div.form-group
-      label(for='price') Nowa cena:
-      br
-      input#new_price.form-control(type='number', placeholder=meme.price, name='price')
-    button(type='submit') ZMIEŃ TO
+  if logged
+    form(method='POST' action='/meme/' + meme.id)
+      input(type="hidden" name="_csrf" value=csrfToken)
+      div.form-group
+        label(for='price') Nowa cena:
+        br
+        input#new_price.form-control(type='number', placeholder=meme.price, name='price')
+      button(type='submit') ZMIEŃ TO

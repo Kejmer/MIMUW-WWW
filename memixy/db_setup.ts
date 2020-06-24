@@ -1,59 +1,68 @@
-import * as sqlite3 from "sqlite3";
+import * as sqlite from "sqlite3";
+import {memesInit} from "./memy";
+import {usersInit} from "./login";
+import {openDB} from "./db_handler"
 
-const db_name = "memgazyn.db";
+sqlite.verbose();
 
-function errHandler(err) {
-  if (err) throw(err);
-}
-// created_at TEXT DEFAULT CURRENT_TIMESTAMP
-function logHistory(price: number, id: number) {
-  return `INSERT INTO history (meme_id, price, updated_at) VALUES ${id}, ${price}, dzisiaj`;
-}
+function dbSetup() {
+  let db = openDB();
+  console.log("START");
+  db.all(`SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type='table' AND name IN ('memes', 'history', 'users');`, (err, rows) => {
+    if (err) throw err;
 
-function insertMeme(name : string, file_name : string, price : number) : string {
-  return `INSERT INTO memes (name, file_name, price) VALUES "${name}", "public/images/${file_name}", "${price}";`;
-}
-
-function dbSetup() { // PRZEROBIĆ NA SERIALIZE
-  sqlite3.verbose();
-  let db = new sqlite3.Database(db_name);
-  db.get('SELECT name FROM sqlite_master WHERE type="table" AND name = "memes"', [], (err, row) => {
-    errHandler(err);
-    if (!row) {
-      db.close();
+    if (rows[0].cnt === 3) {
+      console.log('Database tables already exist.');
       return;
     }
-    let schema = "CREATE TABLE memes (id INT PRIMARY KEY AUTOINCREMENT, name VARCHAR(255), file_name VARCHAR(255), price INT);";
-    schema += insertMeme("42", "42.jpg", 42);
-    schema += insertMeme("Cyberksio", "cyberpunk.png", 13);
-    schema += insertMeme("Frontend", "frontend.png", 1023);
-    schema += insertMeme("Before and after", "math.jpg", 1);
-    schema += insertMeme("Teoria mnogosci", "mnogosc.jpg", 412);
-    schema += insertMeme("Piasek", "plaza.jpg", 551);
-    schema += insertMeme("Perspektywa bułki", "pov.png", 112);
-    schema += insertMeme("Papier toaletowy", "pqpi34.jpg", 152);
-    schema += insertMeme("Sratch chad", "scratch.png", 1020);
-    schema += insertMeme("Vim", "vim.png", 0);
-    schema += insertMeme("Bledy kompilacji", "znowu_oni.png", 1822);
 
-
-    db.run(schema);
+    console.log('Creating database tables...');
+    db.serialize(() => {
+      db.run(`
+        CREATE TABLE history (
+          meme_id INTEGER NOT NULL,
+          price INTEGER NOT NULL,
+          created_at REAL NOT NULL,
+          author TEXT
+        )
+        `, [], (err: any) => {
+          if (err) throw err;
+        });
+      db.run(`
+        CREATE INDEX history_time_idx
+          ON history(created_at)
+        `, [], (err: any) => {
+          if (err) throw err;
+      });
+      db.run(`
+        CREATE TABLE users (
+          id INTEGER PRIMARY KEY,
+          username TEXT UNIQUE,
+          hashed_pass TEXT
+        )
+        `, [], (err: any) => {
+          if (err) throw err;
+      });
+      db.run(`
+        CREATE TABLE memes (
+          id INTEGER PRIMARY KEY,
+          name TEXT NOT NULL,
+          url TEXT NOT NULL,
+          price INTEGER NOT NULL,
+          last_updator TEXT
+        )`
+        , [], (err: any) => {
+          if (err) throw err;
+        });
+      db.close(() => {
+        console.log('Done.');
+        usersInit();
+        memesInit();
+      });
+    });
   });
 }
 
-function getMeme(id: number) {
-  sqlite3.verbose();
-  let db = new sqlite3.Database(db_name);
-  let done : boolean = false;
-  let result; // ogarnąć obiektowość
-  db.get('SELECT * from memes WHERE id = ?', [id], (err, row) => {
-    errHandler(err);
-    if (!row) throw("NO MEME");
-    result = row;
-    done = true;
-  });
-  while (!done);
-  return result;
-}
 
-dbSetup();
+
+dbSetup()
