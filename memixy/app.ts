@@ -19,7 +19,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser("deadBEEF4242424242424242"));
 app.use(logger('dev'));
 app.use(session({secret: "deadBEEF4242424242424242", resave: false, saveUninitialized: false, store: new SQLiteStore}))
 app.use(express.static(path.join(__dirname, 'public')));
