@@ -74,15 +74,15 @@ app.post('/meme/:memeId(\\d+)', csrfProtection, async function (req, res, next) 
 
 });
 
-app.get('/login', (req, res) => {
+app.get('/login', csrfProtection, (req, res) => {
   if (req.session.user) {
     res.redirect("/");
     return;
   }
-  res.render('login', {title: "Logowanie", logged: !!req.session.user});
+  res.render('login', {title: "Logowanie", csrfToken: req.csrfToken(), logged: !!req.session.user});
 });
 
-app.post('/login', async (req, res, next) => {
+app.post('/login', csrfProtection, async (req, res, next) => {
   if (req.session.user) {
     res.redirect("/");
     return;
@@ -94,7 +94,7 @@ app.post('/login', async (req, res, next) => {
     req.session.user = username;
     res.redirect("/");
   } else {
-    res.render('login', {title: "Błędne dane logowania", logged: !!req.session.user});
+    res.render('login', {title: "Błędne dane logowania", csrfToken: req.csrfToken(), logged: !!req.session.user});
   }
 });
 

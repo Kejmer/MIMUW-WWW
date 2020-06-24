@@ -67,7 +67,7 @@ export function login(username: string, password: string) : Promise<boolean> {
 }
 
 export function usersInit() {
-  newUser("admin", "admin").catch((err) => {console.log(err)})
-  newUser("user", "user").catch((err) => {console.log(err)})
+  newUser("admin", "admin")
+  newUser("user", "user")
 }
 
